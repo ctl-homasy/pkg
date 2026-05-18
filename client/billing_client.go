@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/homasy/pkg/grpc"
-	billingpb "github.com/homasy/pkg/shared/billing-service/proto"
+	"github.com/ctl-homasy/pkg/grpc"
+	billingpb "github.com/ctl-homasy/pkg/shared/billing-service/proto"
 	gogrpc "google.golang.org/grpc"
 )
 

@@ -10,7 +10,7 @@ import (
 	"time"
 	"strconv"
 
-	hrpb "github.com/homasy/pkg/shared/human-resource-service/proto"
+	hrpb "github.com/ctl-homasy/pkg/shared/human-resource-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	billingpb "github.com/homasy/pkg/shared/billing-service/proto"
+	billingpb "github.com/ctl-homasy/pkg/shared/billing-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

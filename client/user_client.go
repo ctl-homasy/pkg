@@ -10,7 +10,7 @@ import (
 	"time"
 
 
-	userpb "github.com/homasy/pkg/shared/user-service/proto"
+	userpb "github.com/ctl-homasy/pkg/shared/user-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

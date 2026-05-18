@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	supplypb "github.com/homasy/pkg/shared/supply-chain-service/proto"
+	supplypb "github.com/ctl-homasy/pkg/shared/supply-chain-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

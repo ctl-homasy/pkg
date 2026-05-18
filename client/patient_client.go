@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	patientpb "github.com/homasy/pkg/shared/patient-service/proto"
+	patientpb "github.com/ctl-homasy/pkg/shared/patient-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

@@ -1,4 +1,4 @@
-module github.com/homasy/pkg
+module github.com/ctl-homasy/pkg
 
 go 1.24.3
 

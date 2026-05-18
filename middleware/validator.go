@@ -6,8 +6,8 @@ import (
 	"context"
 	"regexp"
 
-	appointment_pb "github.com/homasy/pkg/shared/appointment-service/proto"
-	patient_pb "github.com/homasy/pkg/shared/patient-service/proto"
+	appointment_pb "github.com/ctl-homasy/pkg/shared/appointment-service/proto"
+	patient_pb "github.com/ctl-homasy/pkg/shared/patient-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

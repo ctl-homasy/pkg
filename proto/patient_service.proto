@@ -1,0 +1,209 @@
+// patient_service.proto
+
+syntax = "proto3";
+
+package patient_service;
+
+import "google/api/annotations.proto";
+
+option go_package = "./shared/patient-service/proto";
+
+message PaymentMethod {
+  string type = 1;
+  string card_number = 2;
+  string expiry_date = 3;
+  string cvv = 4;
+  string scheme_provider = 5;
+  string scheme_id = 6;
+}
+
+message PatientAllergy {
+  string name = 1;
+  string description = 2;
+  string severity = 3;
+  string reaction = 4;
+}
+
+message EmergencyContact {
+  string name = 1;
+  string relationship = 2;
+  string phone_number = 3;
+  string email = 4;
+  string address = 5;
+  string gender = 6;
+}
+
+message MedicalConditions {
+  string condition_name = 1;
+  string description = 2;
+  string severity = 3;
+  string treatment = 4;
+}
+
+service PatientService {
+
+  rpc AddPatient (AddPatientRequest) returns (AddPatientResponse) {
+    option (google.api.http) = {
+      post: "/v1/patients"
+      body: "*"
+    };
+  }
+
+  rpc GetPatient (GetPatientRequest) returns (GetPatientResponse) {
+    option (google.api.http) = {
+      get: "/v1/patients/{id}"
+    };
+  }
+
+  rpc UpdatePatient (UpdatePatientRequest) returns (UpdatePatientResponse) {
+    option (google.api.http) = {
+      put: "/v1/patients/{id}"
+      body: "*"
+    };
+  }
+
+  rpc DeletePatient (DeletePatientRequest) returns (DeletePatientResponse) {
+    option (google.api.http) = {
+      delete: "/v1/patients/{id}"
+    };
+  }
+
+  rpc ListPatients (ListPatientsRequest) returns (ListPatientsResponse) {
+    option (google.api.http) = {
+      get: "/v1/patients"
+    };
+  }
+
+  rpc CheckDuplicate (CheckDuplicateRequest) returns (CheckDuplicateResponse) {
+    option (google.api.http) = {
+      post: "/v1/patients/check-duplicate"
+      body: "*"
+    };
+  }
+}
+
+message AddPatientRequest {
+  string first_name = 1;
+  string middle_name = 2;
+  string last_name = 3;
+  string date_of_birth = 4;
+  string gender = 5;
+  string email = 6;
+  string phone_number = 7;
+  string address = 8;
+  string blood_type = 9;
+  string fingerprint_data = 10;
+  string signature_data = 11;
+  string photo_data = 12;
+  string status = 13;
+  repeated PaymentMethod payment_methods = 14;
+  repeated PatientAllergy allergies = 15;
+  string created_at = 16;
+  string updated_at = 17;
+
+  string patient_id = 18;
+  string nationality = 19;
+  string national_id = 20;
+  string passport_number = 21;
+  string marital_status = 22;
+  string occupation = 23;
+  repeated EmergencyContact emergency_contacts = 24;
+  repeated MedicalConditions known_medical_conditions = 25;
+}
+
+message AddPatientResponse {
+  string id = 1;
+}
+
+message GetPatientRequest {
+  string id = 1;
+}
+
+message GetPatientResponse {
+  string id = 1;
+  string first_name = 2;
+  string middle_name = 3;
+  string last_name = 4;
+  string date_of_birth = 5;
+  string gender = 6;
+  string email = 7;
+  string phone_number = 8;
+  string address = 9;
+  string blood_type = 10;
+  string fingerprint_data = 11;
+  string signature_data = 12;
+  string photo_data = 13;
+  string status = 14;
+  repeated PaymentMethod payment_methods = 15;
+  repeated PatientAllergy allergies = 16;
+  string created_at = 17;
+  string updated_at = 18;
+
+  string patient_id = 19;
+  string nationality = 20;
+  string national_id = 21;
+  string passport_number = 22;
+  string marital_status = 23;
+  string occupation = 24;
+  repeated EmergencyContact emergency_contacts = 25;
+  repeated MedicalConditions known_medical_conditions = 26;
+  int64 medical_scheme_id = 27;
+}
+
+message UpdatePatientRequest {
+  string id = 1;
+  string first_name = 2;
+  string middle_name = 3;
+  string last_name = 4;
+  string date_of_birth = 5;
+  string gender = 6;
+  string email = 7;
+  string phone_number = 8;
+  string address = 9;
+  string blood_type = 10;
+  repeated PaymentMethod payment_methods = 11;
+  repeated PatientAllergy allergies = 12;
+  string fingerprint_data = 13;
+  string signature_data = 14;
+  string photo_data = 15;
+  string updated_at = 16;
+  string status = 17;
+
+  string patient_id = 18;
+  string nationality = 19;
+  string national_id = 20;
+  string passport_number = 21;
+  string marital_status = 22;
+  string occupation = 23;
+  repeated EmergencyContact emergency_contacts = 24;
+  repeated MedicalConditions known_medical_conditions = 25;
+}
+
+message UpdatePatientResponse {
+  bool success = 1;
+}
+
+message DeletePatientRequest {
+  string id = 1;
+}
+
+message DeletePatientResponse {
+  bool success = 1;
+}
+
+message ListPatientsRequest {}
+
+message ListPatientsResponse {
+  repeated GetPatientResponse patients = 1;
+}
+
+message CheckDuplicateRequest {
+  string email = 1;
+  string phone_number = 2;
+  string national_id = 3;
+  string patient_id = 4;
+}
+
+message CheckDuplicateResponse {
+  bool is_duplicate = 1;
+}

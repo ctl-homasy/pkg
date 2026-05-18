@@ -1,0 +1,174 @@
+// issue_report_service.proto
+
+syntax = "proto3";
+
+package issue_report_service;
+
+option go_package = "./shared/issue-report-service/proto";
+
+import "google/api/annotations.proto";
+
+// The report message
+message Report {
+    int32 id = 1;
+    string title = 2;
+    string priority = 3;
+    string description = 4;
+    int32 user_id = 5;
+    string status = 6;
+    string created_at = 7;
+    string updated_at = 8;
+}
+
+// The password request message
+message PasswordRequest {
+    int32 id = 1;
+    string email = 2;
+    string reason = 3;
+    string status = 4;
+    string created_at = 5;
+}
+
+// Request message for adding a report
+message AddReportRequest {
+    string title = 1;
+    string priority = 2;
+    string description = 3;
+    int32 user_id = 4;
+}
+
+// Response message for adding a report
+message AddReportResponse {
+    int32 id = 1;
+}
+
+// Request message for adding a password request
+message AddPasswordMessageRequest {
+    string email = 1;
+    string reason = 2;
+}
+
+// Response message for adding a password request
+message AddPasswordResponse {
+    int32 id = 1;
+}
+
+// Request message for getting user reports
+message GetUserReportsRequest {
+    int32 user_id = 1;
+}
+
+// Response message for getting user reports
+message GetUserReportsResponse {
+    repeated Report reports = 1;
+}
+
+// Request message for getting all reports
+message GetAllReportsRequest {}
+
+// Response message for getting all reports
+message GetAllReportsResponse {
+    repeated Report reports = 1;
+}
+
+// Request message for getting all password requests
+message GetAllPasswordRequestsRequest {}
+
+// Response message for getting all password requests
+message GetAllPasswordRequestsResponse {
+    repeated PasswordRequest password_requests = 1;
+}
+
+
+// Request message for deleting a report
+message DeleteReportRequest {
+    int32 id = 1;
+}
+
+// Response message for deleting a report
+message DeleteReportResponse {
+    bool success = 1;
+}
+
+// Request message for updating report status
+message UpdateReportStatusRequest {
+    int32 id = 1;
+    string status = 2;
+}
+
+// Response message for updating report status
+message UpdateReportStatusResponse {
+    bool success = 1;
+}
+
+// Request message for updating password request status
+message UpdatePasswordRequestStatusRequest {
+    int32 id = 1;
+    string status = 2;
+}
+
+// Response message for updating password request status
+message UpdatePasswordRequestStatusResponse {
+    bool success = 1;
+}
+
+// The user report service definition
+service IssueReportService {
+    rpc AddReport(AddReportRequest) returns (AddReportResponse) {
+        option (google.api.http) = {
+            post: "/v1/issues"
+            body: "*"
+        };
+    }
+    
+    rpc GetUserReports(GetUserReportsRequest) returns (GetUserReportsResponse) {
+        option (google.api.http) = {
+            get: "/v1/issues/user/{user_id}"
+        };
+    }
+    
+    rpc GetAllReports(GetAllReportsRequest) returns (GetAllReportsResponse) {
+        option (google.api.http) = {
+            get: "/v1/issues"
+        };
+    }
+    rpc DeleteReport(DeleteReportRequest) returns (DeleteReportResponse){
+        option (google.api.http) = {
+            delete: "/v1/issues/{id}"
+        };
+    }
+    rpc UpdateReportStatus(UpdateReportStatusRequest) returns (UpdateReportStatusResponse){
+        option (google.api.http) = {
+            patch: "/v1/issues/{id}"
+            body: "*"
+        };
+    }
+
+
+    rpc AddPasswordRequest(AddPasswordMessageRequest) returns (AddPasswordResponse) {
+        option (google.api.http) = {
+            post: "/v1/password-requests"
+            body: "*"
+        };
+    }
+
+    rpc GetAllPasswordRequests(GetAllPasswordRequestsRequest) returns (GetAllPasswordRequestsResponse) {
+        option (google.api.http) = {
+            get: "/v1/password-requests"
+        };
+    }
+
+    rpc UpdateRequestStatus(UpdatePasswordRequestStatusRequest) returns (UpdatePasswordRequestStatusResponse){
+        option (google.api.http) = {
+            patch: "/v1/password-requests/{id}"
+            body: "*"
+        };
+    }
+}
+
+
+
+
+
+
+

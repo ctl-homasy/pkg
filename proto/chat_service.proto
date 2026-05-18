@@ -1,0 +1,367 @@
+// chat_service.proto
+
+syntax = "proto3";
+
+package chat_service;
+
+import "google/api/annotations.proto";
+
+option go_package = "./shared/chat-service/proto";
+
+// ChatService defines the service for managing chat communications
+service ChatService {
+  // Send a message
+  rpc SendMessage (SendMessageRequest) returns (SendMessageResponse) {
+    option (google.api.http) = {
+      post: "/v1/messages"
+      body: "*"
+    };
+  }
+
+  // Get a message by ID
+  rpc GetMessage (GetMessageRequest) returns (GetMessageResponse) {
+    option (google.api.http) = {
+      get: "/v1/messages/{message_id}"
+    };
+  }
+
+  // Delete a message
+  rpc DeleteMessage (DeleteMessageRequest) returns (DeleteMessageResponse) {
+    option (google.api.http) = {
+      delete: "/v1/messages/{message_id}"
+    };
+  }
+
+  // Edit a message
+  rpc EditMessage (EditMessageRequest) returns (EditMessageResponse) {
+    option (google.api.http) = {
+      put: "/v1/messages/{message_id}"
+      body: "*"
+    };
+  }
+
+  // Get messages for a conversation
+  rpc GetConversationMessages (GetConversationMessagesRequest) returns (GetConversationMessagesResponse) {
+    option (google.api.http) = {
+      get: "/v1/conversations/{conversation_id}/messages"
+    };
+  }
+
+  // Create a conversation
+  rpc CreateConversation (CreateConversationRequest) returns (CreateConversationResponse) {
+    option (google.api.http) = {
+      post: "/v1/conversations"
+      body: "*"
+    };
+  }
+
+  // Get a conversation by ID
+  rpc GetConversation (GetConversationRequest) returns (GetConversationResponse) {
+    option (google.api.http) = {
+      get: "/v1/conversations/{conversation_id}"
+    };
+  }
+
+  // List conversations for a user
+  rpc ListUserConversations (ListUserConversationsRequest) returns (ListUserConversationsResponse) {
+    option (google.api.http) = {
+      get: "/v1/users/{user_id}/conversations"
+    };
+  }
+
+  // Create a group
+  rpc CreateGroup (CreateGroupRequest) returns (CreateGroupResponse) {
+    option (google.api.http) = {
+      post: "/v1/groups"
+      body: "*"
+    };
+  }
+
+  // Get a group by ID
+  rpc GetGroup (GetGroupRequest) returns (GetGroupResponse) {
+    option (google.api.http) = {
+      get: "/v1/groups/{group_id}"
+    };
+  }
+
+  // Add user to group
+  rpc AddUserToGroup (AddUserToGroupRequest) returns (AddUserToGroupResponse) {
+    option (google.api.http) = {
+      post: "/v1/groups/{group_id}/users"
+      body: "*"
+    };
+  }
+
+  // Remove user from group
+  rpc RemoveUserFromGroup (RemoveUserFromGroupRequest) returns (RemoveUserFromGroupResponse) {
+    option (google.api.http) = {
+      delete: "/v1/groups/{group_id}/users/{user_id}"
+    };
+  }
+
+  // List groups for a user
+  rpc ListUserGroups (ListUserGroupsRequest) returns (ListUserGroupsResponse) {
+    option (google.api.http) = {
+      get: "/v1/users/{user_id}/groups"
+    };
+  }
+
+  // Stream for real-time updates
+  rpc StreamUpdates (StreamUpdatesRequest) returns (stream StreamUpdate) {}
+
+  // Update user status
+  rpc UpdateUserStatus (UpdateUserStatusRequest) returns (UpdateUserStatusResponse) {
+    option (google.api.http) = {
+      put: "/v1/users/{user_id}/status"
+      body: "*"
+    };
+  }
+
+  // Mark message as read
+  rpc MarkMessageAsRead (MarkMessageAsReadRequest) returns (MarkMessageAsReadResponse) {
+    option (google.api.http) = {
+      put: "/v1/messages/{message_id}/read"
+      body: "*"
+    };
+  }
+}
+
+// Message types
+enum MessageType {
+  TEXT = 0;
+  IMAGE = 1;
+  FILE = 2;
+  SYSTEM = 3;
+}
+
+// User status types
+enum UserStatus {
+  ONLINE = 0;
+  AWAY = 1;
+  BUSY = 2;
+  OFFLINE = 3;
+}
+
+// Message model
+message Message {
+  string message_id = 1;
+  string sender_id = 2;
+  string conversation_id = 3;
+  string content = 4;
+  string timestamp = 5;
+  bool is_read = 6;
+  bool is_edited = 7;
+  MessageType type = 8;
+  repeated string read_by = 9;
+}
+
+// Conversation model
+message Conversation {
+  string conversation_id = 1;
+  string user_id_1 = 2;
+  string user_id_2 = 3;
+  string last_activity = 4;
+  int32 unread_count = 5;
+}
+
+// Group model
+message Group {
+  string group_id = 1;
+  string name = 2;
+  repeated string members = 3;
+  string created_by = 4;
+  string created_at = 5;
+  bool is_active = 6;
+}
+
+message User {
+  string user_id = 1;
+  string name = 2;
+  bool online = 3;
+  string avatar = 4;
+  UserStatus status = 5;
+  bool typing = 6;
+  string last_seen = 7;
+  string role = 8;
+}
+
+// Request/Response messages
+
+// SendMessage
+message SendMessageRequest {
+  string sender_id = 1;
+  string conversation_id = 2;
+  string content = 3;
+  MessageType type = 4;
+}
+
+message SendMessageResponse {
+  Message message = 1;
+}
+
+// GetMessage
+message GetMessageRequest {
+  string message_id = 1;
+}
+
+message GetMessageResponse {
+  Message message = 1;
+}
+
+// DeleteMessage
+message DeleteMessageRequest {
+  string message_id = 1;
+  string user_id = 2; // For authorization
+}
+
+message DeleteMessageResponse {
+  bool success = 1;
+}
+
+// EditMessage
+message EditMessageRequest {
+  string message_id = 1;
+  string user_id = 2; // For authorization
+  string content = 3;
+}
+
+message EditMessageResponse {
+  Message message = 1;
+}
+
+// GetConversationMessages
+message GetConversationMessagesRequest {
+  string conversation_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message GetConversationMessagesResponse {
+  repeated Message messages = 1;
+}
+
+// CreateConversation
+message CreateConversationRequest {
+  string user_id_1 = 1;
+  string user_id_2 = 2;
+}
+
+message CreateConversationResponse {
+  Conversation conversation = 1;
+}
+
+// GetConversation
+message GetConversationRequest {
+  string conversation_id = 1;
+}
+
+message GetConversationResponse {
+  Conversation conversation = 1;
+}
+
+// ListUserConversations
+message ListUserConversationsRequest {
+  string user_id = 1;
+}
+
+message ListUserConversationsResponse {
+  repeated Conversation conversations = 1;
+}
+
+// CreateGroup
+message CreateGroupRequest {
+  string name = 1;
+  repeated string members = 2;
+  string created_by = 3;
+}
+
+message CreateGroupResponse {
+  Group group = 1;
+}
+
+// GetGroup
+message GetGroupRequest {
+  string group_id = 1;
+}
+
+message GetGroupResponse {
+  Group group = 1;
+}
+
+// AddUserToGroup
+message AddUserToGroupRequest {
+  string group_id = 1;
+  string user_id = 2;
+  string added_by = 3; // For authorization
+}
+
+message AddUserToGroupResponse {
+  bool success = 1;
+}
+
+// RemoveUserFromGroup
+message RemoveUserFromGroupRequest {
+  string group_id = 1;
+  string user_id = 2;
+  string removed_by = 3; // For authorization
+}
+
+message RemoveUserFromGroupResponse {
+  bool success = 1;
+}
+
+// ListUserGroups
+message ListUserGroupsRequest {
+  string user_id = 1;
+}
+
+message ListUserGroupsResponse {
+  repeated Group groups = 1;
+}
+
+// StreamUpdates
+message StreamUpdatesRequest {
+  string user_id = 1;
+}
+
+message StreamUpdate {
+  enum UpdateType {
+    NEW_MESSAGE = 0;
+    MESSAGE_READ = 1;
+    MESSAGE_EDITED = 2;
+    MESSAGE_DELETED = 3;
+    USER_STATUS_CHANGED = 4;
+    USER_TYPING = 5;
+    GROUP_CREATED = 6;
+    GROUP_UPDATED = 7;
+  }
+  
+  UpdateType type = 1;
+  string timestamp = 2;
+  
+  // One of the following will be set based on the update type
+  Message message = 3;
+  User user = 4;
+  Group group = 5;
+  string conversation_id = 6;
+}
+
+// UpdateUserStatus
+message UpdateUserStatusRequest {
+  string user_id = 1;
+  UserStatus status = 2;
+}
+
+message UpdateUserStatusResponse {
+  bool success = 1;
+}
+
+// MarkMessageAsRead
+message MarkMessageAsReadRequest {
+  string message_id = 1;
+  string user_id = 2;
+}
+
+message MarkMessageAsReadResponse {
+  bool success = 1;
+}

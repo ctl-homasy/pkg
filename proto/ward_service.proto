@@ -1,0 +1,431 @@
+// ward_service.proto
+
+syntax = "proto3";
+
+package ward_service;
+
+import "google/api/annotations.proto";
+
+option go_package = "./shared/ward-service/proto";
+
+service WardService {
+    rpc CreateBed(CreateBedRequest) returns (CreateBedResponse) {
+        option (google.api.http) = {
+          post: "/v1/beds"
+          body: "*"
+        };
+     }
+    
+      // Retrieve a single bed
+      rpc GetBed(GetBedRequest) returns (GetBedResponse) {
+        option (google.api.http) = {
+          get: "/v1/beds/{bed_id}"
+        };
+      }
+    
+      // Update a bed's details
+      rpc UpdateBed(UpdateBedRequest) returns (UpdateBedResponse) {
+        option (google.api.http) = {
+          put: "/v1/beds/{bed_id}"
+          body: "*"
+        };
+      }
+    
+      // Delete a bed
+      rpc DeleteBed(DeleteBedRequest) returns (DeleteBedResponse) {
+        option (google.api.http) = {
+          delete: "/v1/beds/{bed_id}"
+        };
+      }
+    
+      // List all beds
+      rpc ListBeds(ListBedsRequest) returns (ListBedsResponse) {
+        option (google.api.http) = {
+          get: "/v1/beds"
+        };
+      }
+    
+    // ward services definition 
+  rpc CreateWard (CreateWardRequest) returns (CreateWardResponse) {
+    option (google.api.http) = {
+      post: "/v1/wards"
+      body: "*"
+    };
+  }
+
+  rpc GetWard (GetWardRequest) returns (GetWardResponse) {
+    option (google.api.http) = {
+      get: "/v1/wards/{ward_id}"
+    };
+  }
+
+  rpc UpdateWard (UpdateWardRequest) returns (UpdateWardResponse) {
+    option (google.api.http) = {
+      put: "/v1/wards/{ward_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteWard (DeleteWardRequest) returns (DeleteWardResponse) {
+    option (google.api.http) = {
+      delete: "/v1/wards/{ward_id}"
+    };
+  }
+
+  rpc ListWards (ListWardsRequest) returns (ListWardsResponse) {
+    option (google.api.http) = {
+      get: "/v1/wards"
+    };
+  }
+
+  // admissions service definitions
+  rpc CreateAdmission (CreateAdmissionRequest) returns (CreateAdmissionResponse) {
+    option (google.api.http) = {
+      post: "/v1/admissions"
+      body: "*"
+    };
+  }
+
+  rpc GetAdmission (GetAdmissionRequest) returns (GetAdmissionResponse) {
+    option (google.api.http) = {
+      get: "/v1/admissions/{admission_id}"
+    };
+  }
+
+  rpc ListAdmissions (ListAdmissionsRequest) returns (ListAdmissionsResponse) {
+    option (google.api.http) = {
+      get: "/v1/admissions"
+    };
+  }
+
+  rpc UpdateAdmission (UpdateAdmissionRequest) returns (UpdateAdmissionResponse) {
+    option (google.api.http) = {
+      put: "/v1/admissions/{admission_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteAdmission (DeleteAdmissionRequest) returns (DeleteAdmissionResponse) {
+    option (google.api.http) = {
+      delete: "/v1/admissions/{admission_id}"
+    };
+  }
+
+  // Patient transfer service
+  rpc TransferPatient (TransferPatientRequest) returns (TransferPatientResponse) {
+    option (google.api.http) = {
+      post: "/v1/transfers"
+      body: "*"
+    };
+  }
+
+  rpc GetTransfer (GetTransferRequest) returns (GetTransferResponse) {
+    option (google.api.http) = {
+      get: "/v1/transfers/{transfer_id}"
+    };
+  }
+
+  rpc ListTransfers (ListTransfersRequest) returns (ListTransfersResponse) {
+    option (google.api.http) = {
+      get: "/v1/transfers"
+    };
+  }
+
+  // discharges 
+  rpc CreateDischarge (CreateDischargeRequest) returns (CreateDischargeResponse) {
+    option (google.api.http) = {
+      post: "/v1/discharges"
+      body: "*"
+    };
+  }
+
+  rpc ListDischarges (ListDischargesRequest) returns (ListDischargesResponse) {
+    option (google.api.http) = {
+      get: "/v1/discharges"
+    };
+  }
+
+  rpc UpdateDischarge (UpdateDischargeRequest) returns (UpdateDischargeResponse) {
+    option (google.api.http) = {
+      put: "/v1/discharges/{discharge_id}"
+      body: "*"
+    };
+  }
+
+  rpc GetDischarge (GetDischargeRequest) returns (GetDischargeResponse) {
+    option (google.api.http) = {
+      get: "/v1/discharges/{discharge_id}"
+    };
+  }
+}
+
+// Transfer Messages
+message Transfer {
+  int32 transfer_id = 1;
+  int32 admission_id = 2;
+  int32 from_ward_id = 3;
+  int32 to_ward_id = 4;
+  int32 from_bed_id = 5;
+  int32 to_bed_id = 6;
+  string transfer_date = 7;
+  string reason = 8;
+  int32 patient_id = 9;
+  string patient_name = 10;
+}
+
+message TransferPatientRequest {
+  int32 admission_id = 1;
+  int32 from_ward_id = 2;
+  int32 to_ward_id = 3;
+  int32 from_bed_id = 4;
+  int32 to_bed_id = 5;
+  string reason = 6;
+}
+
+message TransferPatientResponse {
+  int32 transfer_id = 1;
+  string message = 2;
+}
+
+message GetTransferRequest {
+  int32 transfer_id = 1;
+}
+
+message GetTransferResponse {
+  Transfer transfer = 1;
+}
+
+message ListTransfersRequest {}
+
+message ListTransfersResponse {
+  repeated Transfer transfers = 1;
+}
+
+// Discharge Message
+message Discharge {
+  int32 discharge_id = 1;
+  int32 admission_id = 2;
+  string discharge_date = 3;
+  string reason = 4;
+  int32 patient_id = 5;
+  string patient_name = 6;
+}
+
+message UpdateDischargeRequest{
+  int32 discharge_id = 1;
+  string reason = 2;
+}
+
+message UpdateDischargeResponse{
+  bool success = 1;
+  string message = 2;
+}
+
+// Create Discharge Request & Response
+message CreateDischargeRequest {
+  int32 admission_id = 1;
+  string reason = 2;
+}
+
+message CreateDischargeResponse {
+  int32 discharge_id = 1;
+  string message = 2;
+}
+
+// List Discharges Request & Response
+message ListDischargesRequest {}
+
+message ListDischargesResponse {
+  repeated Discharge discharges = 1;
+}
+
+// Get Discharge Request & Response
+message GetDischargeRequest {
+  int32 discharge_id = 1;
+}
+
+message GetDischargeResponse {
+  Discharge discharge = 1;
+}
+
+// admissions Messages
+message Admission {
+  int32 admission_id = 1;
+  int32 patient_id = 2;
+  int32 doctor_id = 3;
+  int32 ward_id = 4;
+  int32 bed_id = 5;
+  string status = 6;
+  string admission_date = 7;
+  string patient_name = 8;
+  string ward_name = 9;
+  string doctor_name = 10;
+  string bed_number = 11;
+  string reason = 12;
+}
+
+message CreateAdmissionRequest {
+  int32 patient_id = 1;
+  int32 doctor_id = 2;
+  int32 ward_id = 3;
+  int32 bed_id = 4;
+  string reason = 5;
+}
+
+message CreateAdmissionResponse {
+  int32 admission_id = 1;
+  string message = 2;
+}
+
+message GetAdmissionRequest {
+  int32 admission_id = 1;
+}
+
+message GetAdmissionResponse {
+  Admission admission = 1;
+}
+
+message ListAdmissionsRequest {}
+
+message ListAdmissionsResponse {
+  repeated Admission admissions = 1;
+}
+
+message UpdateAdmissionRequest {
+  int32 admission_id = 1;
+  string status = 2;
+}
+
+message UpdateAdmissionResponse {
+   bool success = 1;
+  string message = 2;
+}
+
+message DeleteAdmissionRequest {
+  int32 admission_id = 1;
+}
+
+message DeleteAdmissionResponse {
+ bool success= 1;
+  string message = 2;
+}
+
+// Create Bed
+message CreateBedRequest {
+    int32 ward_id = 1;
+    string bed_number = 2;
+}
+  
+message CreateBedResponse {
+    int32 bed_id = 1;
+    string message= 2;
+}
+ 
+message GetBedRequest {
+    int32 bed_id = 1;
+}
+  
+message GetBedResponse {
+    int32 bed_id = 1;
+    int32 ward_id = 2;
+    string bed_number = 3;
+    string ward_name = 4;
+    string status = 5;
+}
+  
+// Update Bed
+message UpdateBedRequest {
+    int32 bed_id = 1;
+    int32 ward_id = 2;
+    string status = 3;
+}
+  
+message UpdateBedResponse {
+    bool success = 1;
+    string message = 2;
+}
+  
+// Delete Bed
+message DeleteBedRequest {
+    int32 bed_id = 1;
+}
+  
+message DeleteBedResponse {
+    bool success = 1;
+    string message = 2;
+}
+  
+// List Beds
+message ListBedsRequest {}
+  
+message ListBedsResponse {
+    repeated GetBedResponse beds = 1;
+}
+
+// Bed message for repository layer
+message Bed {
+    int32 bed_id = 1;
+    int32 ward_id = 2;
+    string bed_number = 3;
+    string status = 4;
+}
+
+message CreateWardRequest {
+  string ward_name = 1;
+  string ward_type = 2;
+  int32 capacity = 3;
+}
+
+message CreateWardResponse {
+  int32 ward_id = 1;
+  string message  = 2;
+}
+
+message GetWardRequest {
+  int32 ward_id = 1;
+}
+
+message GetWardResponse {
+  int32 ward_id = 1;
+  string ward_name = 2;
+  string ward_type = 3;
+  int32 capacity = 4;
+  string status = 5;
+}
+
+message UpdateWardRequest {
+  int32 ward_id = 1;
+  string ward_name = 2;
+  string ward_type = 3;
+  int32 capacity = 4;
+  string status = 5;
+}
+
+message UpdateWardResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteWardRequest {
+  int32 ward_id = 1;
+}
+
+message DeleteWardResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListWardsRequest {}
+
+message ListWardsResponse {
+  repeated GetWardResponse wards = 1;
+}
+
+// Ward message for repository layer
+message Ward {
+  int32 ward_id = 1;
+  string ward_name = 2;
+  string ward_type = 3;
+  string ward_status = 4;
+  int32 total_beds = 5;
+}

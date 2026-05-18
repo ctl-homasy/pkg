@@ -1,0 +1,186 @@
+syntax = "proto3";
+
+package laboratory_service;
+
+import "google/api/annotations.proto";
+
+option go_package = "./shared/laboratory-service/proto";
+
+service LaboratoryService {
+  rpc RequestLab (RequestLabRequest) returns (LabResponse) {
+    option (google.api.http) = {
+      post: "/v1/labs"
+      body: "*"
+    };
+  }
+
+  rpc AddTestResult (AddTestResultRequest) returns (LabResponse) {
+    option (google.api.http) = {
+      post: "/v1/labs/results"
+      body: "*"
+    };
+  }
+
+  rpc ViewLabRequests (ViewLabRequestsRequest) returns (ViewLabRequestsResponse) {
+    option (google.api.http) = {
+      get: "/v1/labs"
+    };
+  }
+
+  rpc ViewTestResults (ViewTestResultsRequest) returns (ViewTestResultsResponse) {
+    option (google.api.http) = {
+      get: "/v1/labs/results"
+    };
+  }
+
+  rpc ViewLabRequestsByPatientID (ViewLabRequestsByPatientIDRequest) returns (ViewLabRequestsResponse) {
+    option (google.api.http) = {
+      get: "/v1/labs/patient/{patient_id}"
+    };
+  }
+
+  rpc UpdateLabRequest (UpdateLabRequestRequest) returns (LabResponse) {
+    option (google.api.http) = {
+        put: "/v1/labs/{id}"
+        body: "*"
+    };
+  }
+
+  rpc UpdateTestResult (UpdateTestResultRequest) returns (LabResponse) {
+      option (google.api.http) = {
+          put: "/v1/labs/results/{id}"
+          body: "*"
+      };
+  }
+}
+
+message RequestLabRequest {
+  int64 id = 7; 
+  string status = 8;
+  PatientInfo patient_info = 1;
+  RequestDetails request_details = 2;
+  TestInfo test_info = 3;
+  SampleCollection sample_collection = 4;
+  Timestamps timestamps = 5;
+  string follow_up_date = 6;
+}
+
+message AddTestResultRequest {
+  PatientInfo patient_info = 1;
+  int64 request_id = 7;
+  TestInfo test_info = 2;
+  repeated ResultDetails result_details = 3;
+  QualityIndicators quality_indicators = 4;
+  Timestamps timestamps = 5;
+  AdditionalInfo additional_info = 6;
+}
+
+message ViewLabRequestsRequest {}
+
+message ViewLabRequestsResponse {
+  repeated RequestLabRequest requests = 1;
+}
+
+message LabResponse {
+  string message = 1;
+}
+
+message PatientInfo {
+  string patient_id = 1;
+}
+
+message RequestDetails {
+  string doctor = 1;
+  string department = 2;
+  string priority = 3;
+  string clinical_notes = 4;
+  repeated File attachments = 5;
+}
+
+message TestInfo {
+  string test_name = 1;
+  string test_panel = 2;
+  string instructions = 3;
+  string analyzer = 4;
+}
+
+message SampleCollection {
+  string sample_id = 1;
+  string site = 2;
+  string collector_name = 3;
+  string collection_time = 4;
+}
+
+message Timestamps {
+  string request_initiation_time = 1;
+}
+
+message ResultDetails {
+  string parameter = 1;
+  string value = 2;
+  string unit = 3;
+  string reference_range = 4;
+  string flag = 5;
+}
+
+message QualityIndicators {
+  string methodology = 1;
+  string reagents_used = 2;
+  string equipment_used = 3;
+  string result_entry_time = 4; 
+}
+
+message AdditionalInfo {
+  string remarks = 1;
+  File attachments = 2;
+}
+
+message File {
+  string name = 1;
+  int64 size = 2;
+}
+
+message ViewTestResultsRequest {
+  string patient_id = 1; // Optional filter
+  string test_name = 2;  // Optional filter
+}
+
+message ViewTestResultsResponse {
+  repeated TestResult results = 1;
+}
+
+message TestResult {
+  int64 id = 10;
+  int64 request_id = 11;
+  string patient_id = 1;
+  string test_name = 2;
+  string test_panel = 3;
+  string methodology = 4;
+  string reagents_used = 5;
+  string equipment_used = 6;
+  string remarks = 7;
+  string result_entry_time = 8;
+  repeated ResultDetails result_details = 9;
+}
+
+message ViewLabRequestsByPatientIDRequest {
+  string patient_id = 1;
+}
+
+
+message UpdateLabRequestRequest {
+    int64 id = 1;
+    string status = 6;
+    RequestDetails request_details = 2;
+    TestInfo test_info = 3;
+    SampleCollection sample_collection = 4;
+    string follow_up_date = 5;
+}
+
+message UpdateTestResultRequest {
+    int64 id = 1;
+    TestInfo test_info = 2;
+    repeated ResultDetails result_details = 3;
+    QualityIndicators quality_indicators = 4;
+    AdditionalInfo additional_info = 5;
+}

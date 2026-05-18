@@ -1,0 +1,87 @@
+// services/action-permissions-service/proto/action_permissions_service.proto
+syntax = "proto3";
+
+package action_permissions;
+
+import "google/api/annotations.proto";
+
+option go_package = "./shared/action-permissions-service/proto";
+
+service ActionPermissionService {
+  // Check if a user has permission to perform an action on a resource
+  rpc CheckActionPermission (CheckActionPermissionRequest) returns (CheckActionPermissionResponse) {
+    option (google.api.http) = {
+      post: "/v1/action-permissions/check"
+      body: "*"
+    };
+  }
+
+  // Get all action permissions
+  rpc GetAllActionPermissions (GetAllActionPermissionsRequest) returns (GetAllActionPermissionsResponse) {
+    option (google.api.http) = {
+      get: "/v1/action-permissions"
+    };
+  }
+
+  // Update action permissions
+  rpc UpdateActionPermission (UpdateActionPermissionRequest) returns (UpdateActionPermissionResponse) {
+    option (google.api.http) = {
+      put: "/v1/action-permissions"
+      body: "*"
+    };
+  }
+
+  // Add new action permission
+  rpc AddActionPermission (AddActionPermissionRequest) returns (AddActionPermissionResponse) {
+    option (google.api.http) = {
+      post: "/v1/action-permissions"
+      body: "*"
+    };
+  }
+}
+
+message CheckActionPermissionRequest {
+  string resource = 1;
+  string action = 2;
+  string user_id = 3;
+  repeated string user_roles = 4;
+}
+
+message CheckActionPermissionResponse {
+  bool has_permission = 1;
+}
+
+message ActionPermission {
+  string resource = 1;
+  string action = 2;
+  repeated string roles = 3;
+  repeated string users = 4;
+}
+
+message GetAllActionPermissionsRequest {}
+
+message GetAllActionPermissionsResponse {
+  repeated ActionPermission permissions = 1;
+}
+
+message UpdateActionPermissionRequest {
+  string resource = 1;
+  string action = 2;
+  repeated string roles = 3;
+  repeated string users = 4;
+}
+
+message UpdateActionPermissionResponse {
+  bool success = 1;
+}
+
+message AddActionPermissionRequest {
+  string resource = 1;
+  string action = 2;
+  repeated string roles = 3;
+  repeated string users = 4;
+}
+
+message AddActionPermissionResponse {
+  bool success = 1;
+}

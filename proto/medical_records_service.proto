@@ -1,0 +1,414 @@
+// medical_records_service.proto
+
+syntax = "proto3";
+
+package medical_record_service;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+option go_package = "./shared/medical-records-service/proto";
+
+service MedicalRecordService {
+  // Diagnosis endpoints
+  rpc AddDiagnosis(AddDiagnosisRequest) returns (Diagnosis) {
+    option (google.api.http) = {
+      post: "/v1/records/{patient_id}/diagnoses"
+      body: "*"
+    };
+  }
+  
+  rpc GetDiagnosis(GetDiagnosisRequest) returns (Diagnosis) {
+    option (google.api.http) = {
+      get: "/v1/diagnoses/{id}"
+    };
+  }
+  
+  rpc UpdateDiagnosis(Diagnosis) returns (Diagnosis) {
+    option (google.api.http) = {
+      put: "/v1/diagnoses/{id}"
+      body: "*"
+    };
+  }
+  
+  rpc DeleteDiagnosis(DeleteDiagnosisRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/diagnoses/{id}"
+    };
+  }
+  
+  rpc ListDiagnoses(ListDiagnosesRequest) returns (ListDiagnosesResponse) {
+    option (google.api.http) = {
+      get: "/v1/records/{patient_id}/diagnoses"
+    };
+  }
+  
+  // Notes endpoints
+  rpc AddNote(AddNoteRequest) returns (Note) {
+    option (google.api.http) = {
+      post: "/v1/records/{patient_id}/notes"
+      body: "*"
+    };
+  }
+  
+  rpc GetNote(GetNoteRequest) returns (Note) {
+    option (google.api.http) = {
+      get: "/v1/notes/{id}"
+    };
+  }
+  
+  rpc UpdateNote(Note) returns (Note) {
+    option (google.api.http) = {
+      put: "/v1/notes/{id}"
+      body: "*"
+    };
+  }
+  
+  rpc DeleteNote(DeleteNoteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/notes/{id}"
+    };
+  }
+  
+  rpc ListNotes(ListNotesRequest) returns (ListNotesResponse) {
+    option (google.api.http) = {
+      get: "/v1/records/{patient_id}/notes"
+    };
+  }
+  
+  // Vital Signs endpoints
+  rpc AddVitalSign(AddVitalSignRequest) returns (VitalSign) {
+    option (google.api.http) = {
+      post: "/v1/records/{patient_id}/vital-signs"
+      body: "*"
+    };
+  }
+  
+  rpc GetVitalSign(GetVitalSignRequest) returns (VitalSign) {
+    option (google.api.http) = {
+      get: "/v1/vital-signs/{id}"
+    };
+  }
+  
+  rpc ListVitalSigns(ListVitalSignsRequest) returns (ListVitalSignsResponse) {
+    option (google.api.http) = {
+      get: "/v1/records/{patient_id}/vital-signs"
+    };
+  }
+
+  // BMI endpoints
+  rpc AddBMI(AddBMIRequest) returns (BMI) {
+    option (google.api.http) = {
+      post: "/v1/records/{patient_id}/bmi"
+      body: "*"
+    };
+  }
+
+  rpc GetBMI(GetBMIRequest) returns (BMI) {
+    option (google.api.http) = {
+      get: "/v1/bmi/{id}"
+    };
+  }
+
+  rpc ListBMI(ListBMIRequest) returns (ListBMIResponse) {
+    option (google.api.http) = {
+      get: "/v1/records/{patient_id}/bmi"
+    };
+  }
+  
+  // Document endpoints
+  rpc AddDocument(AddDocumentRequest) returns (Document) {
+    option (google.api.http) = {
+      post: "/v1/records/{patient_id}/documents"
+      body: "*"
+    };
+  }
+  
+  rpc GetDocument(GetDocumentRequest) returns (Document) {
+    option (google.api.http) = {
+      get: "/v1/documents/{id}"
+    };
+  }
+  
+  rpc UpdateDocument(Document) returns (Document) {
+    option (google.api.http) = {
+      put: "/v1/documents/{id}"
+      body: "*"
+    };
+  }
+  
+  rpc DeleteDocument(DeleteDocumentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/documents/{id}"
+    };
+  }
+  
+  rpc ListDocuments(ListDocumentsRequest) returns (ListDocumentsResponse) {
+    option (google.api.http) = {
+      get: "/v1/records/{patient_id}/documents"
+    };
+  }
+  
+  rpc AddDocumentVersion(AddDocumentVersionRequest) returns (DocumentVersion) {
+    option (google.api.http) = {
+      post: "/v1/documents/{document_id}/versions"
+      body: "*"
+    };
+  }
+  
+  rpc ShareDocument(ShareDocumentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/documents/{document_id}/share"
+      body: "*"
+    };
+  }
+}
+
+message Diagnosis {
+  string id = 1;
+  string patient_id = 2;
+  string code = 3;
+  string name = 4;
+  string description = 5;
+  string severity = 6; // mild, moderate, severe
+  google.protobuf.Timestamp date = 7;
+  string status = 8; // active, resolved
+  string doctor = 9;
+  string encounter_id = 10;
+}
+
+message AddDiagnosisRequest {
+  string patient_id = 1;
+  string code = 2;
+  string name = 3;
+  string description = 4;
+  string severity = 5;
+  google.protobuf.Timestamp date = 6;
+  string status = 7;
+  string doctor = 8;
+  string encounter_id = 9;
+}
+
+message GetDiagnosisRequest {
+  string id = 1;
+}
+
+message DeleteDiagnosisRequest {
+  string id = 1;
+}
+
+message ListDiagnosesRequest {
+  string patient_id = 1;
+  string status = 2;     // Optional filter: all, active, resolved
+  string search_term = 3; // Optional search term
+  int32 limit = 4;        // 0 = no limit
+  int32 offset = 5;
+}
+
+message ListDiagnosesResponse {
+  repeated Diagnosis diagnoses = 1;
+  int32 total = 2; // Total matching records (before pagination)
+}
+
+message Note {
+  string id = 1;
+  string patient_id = 2;
+  string content = 3;
+  string created_by = 4;
+  google.protobuf.Timestamp created_at = 5;
+  repeated NoteEdit edited_by = 6;
+  repeated string tags = 7;
+  string encounter_id = 8;
+}
+
+message NoteEdit {
+  string user = 1;
+  google.protobuf.Timestamp timestamp = 2;
+}
+
+message AddNoteRequest {
+  string patient_id = 1;
+  string content = 2;
+  string created_by = 3;
+  repeated string tags = 4;
+  string encounter_id = 5;
+}
+
+message GetNoteRequest {
+  string id = 1;
+}
+
+message DeleteNoteRequest {
+  string id = 1;
+}
+
+message ListNotesRequest {
+  string patient_id = 1;
+  string search_term = 2; // Optional search term
+}
+
+message ListNotesResponse {
+  repeated Note notes = 1;
+}
+
+message VitalSign {
+  string id = 1;
+  string patient_id = 2;
+  string admission_id = 11;
+  google.protobuf.Timestamp date = 3;
+  float temperature = 4;
+  int32 heart_rate = 5;
+  string blood_pressure = 6;
+  int32 respiratory_rate = 7;
+  int32 oxygen_saturation = 8;
+  int32 pain = 9;
+  string recorded_by = 10;
+  string notes = 12;
+}
+
+message AddVitalSignRequest {
+  string patient_id = 1;
+  string admission_id = 9;
+  float temperature = 2;
+  int32 heart_rate = 3;
+  string blood_pressure = 4;
+  int32 respiratory_rate = 5;
+  int32 oxygen_saturation = 6;
+  int32 pain = 7;
+  string recorded_by = 8;
+  string notes = 10;
+  google.protobuf.Timestamp date = 11;
+}
+
+message GetVitalSignRequest {
+  string id = 1;
+}
+
+message ListVitalSignsRequest {
+  string patient_id = 1;
+  int32 limit = 2; // Optional limit for number of records
+}
+
+message ListVitalSignsResponse {
+  repeated VitalSign vital_signs = 1;
+}
+
+message Document {
+  string id = 1;
+  string patient_id = 2;
+  string name = 3;
+  string description = 4;
+  string category = 5;
+  google.protobuf.Timestamp upload_date = 6;
+  string uploaded_by = 7;
+  string size = 8;
+  repeated string tags = 9;
+  repeated DocumentVersion versions = 10;
+  string url = 11;
+  string thumbnail_url = 12;
+  string file_type = 13; // image, pdf, document
+  bytes file_data = 14;
+}
+
+message DocumentVersion {
+  string id = 1;
+  string document_id = 2;
+  int32 version = 3;
+  google.protobuf.Timestamp date = 4;
+  string uploaded_by = 5;
+  string url = 6;
+}
+
+message AddDocumentRequest {
+  string patient_id = 1;
+  string name = 2;
+  string description = 3;
+  string category = 4;
+  string uploaded_by = 5;
+  string size = 6;
+  repeated string tags = 7;
+  string file_type = 8;
+  bytes file_data = 9;
+}
+
+message GetDocumentRequest {
+  string id = 1;
+}
+
+message DeleteDocumentRequest {
+  string id = 1;
+}
+
+message ListDocumentsRequest {
+  string patient_id = 1;
+  string category = 2; // Optional filter by category
+  string search_term = 3; // Optional search term
+}
+
+message ListDocumentsResponse {
+  repeated Document documents = 1;
+}
+
+message AddDocumentVersionRequest {
+  string document_id = 1;
+  string uploaded_by = 2;
+  bytes file_data = 3;
+}
+
+message ShareDocumentRequest {
+  string document_id = 1;
+  repeated string user_ids = 2;
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+  string role = 3;
+}
+
+message ListUsersRequest {
+  string role = 1; // Optional filter by role
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+}
+
+message BMI {
+  string id = 1;
+  string patient_id = 2;
+  string admission_id = 10;
+  float weight = 3; // in kg
+  float height = 4; // in cm
+  float bmi_value = 5;
+  string category = 6; // Underweight, Normal, Overweight, Obese
+  string recorded_by = 7;
+  string notes = 8;
+  google.protobuf.Timestamp recorded_at = 9;
+}
+
+message AddBMIRequest {
+  string patient_id = 1;
+  string admission_id = 9;
+  float weight = 2;
+  float height = 3;
+  float bmi = 4;
+  string category = 5;
+  string recorded_by = 6;
+  string notes = 7;
+  google.protobuf.Timestamp recorded_at = 8;
+}
+
+message GetBMIRequest {
+  string id = 1;
+}
+
+message ListBMIRequest {
+  string patient_id = 1;
+  int32 limit = 2;
+}
+
+message ListBMIResponse {
+  repeated BMI bmi_records = 1;
+}

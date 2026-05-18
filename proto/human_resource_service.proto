@@ -1,0 +1,835 @@
+// human_resource_service.proto
+
+syntax = "proto3";
+
+package human_resource_service;
+
+import "google/api/annotations.proto";
+
+option go_package = "./shared/human-resource-service/proto";
+
+// HRService defines the service for managing staff, payroll, leave requests, and departments
+service HRService {
+
+  // ------------------ Staff Endpoints ------------------
+
+  rpc RegisterStaff (RegisterStaffRequest) returns (RegisterStaffResponse) {
+    option (google.api.http) = {
+      post: "/v1/staff"
+      body: "*"
+    };
+  }
+
+  rpc GetStaff (GetStaffRequest) returns (GetStaffResponse) {
+    option (google.api.http) = {
+      get: "/v1/staff/{staff_id}"
+    };
+  }
+
+  rpc UpdateStaff (UpdateStaffRequest) returns (UpdateStaffResponse) {
+    option (google.api.http) = {
+      put: "/v1/staff/{staff_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteStaff (DeleteStaffRequest) returns (DeleteStaffResponse) {
+    option (google.api.http) = {
+      delete: "/v1/staff/{staff_id}"
+    };
+  }
+
+  rpc ListStaff (ListStaffRequest) returns (ListStaffResponse) {
+    option (google.api.http) = {
+      get: "/v1/staff"
+    };
+  }
+
+  rpc IsStaffAvailable (IsStaffAvailableRequest) returns (IsStaffAvailableResponse) {
+    option (google.api.http) = {
+      get: "/v1/staff/availability/{staff_id}"
+    };
+  }
+
+  // ------------------ Payroll Endpoints ------------------
+
+  rpc CreatePayroll (CreatePayrollRequest) returns (CreatePayrollResponse) {
+    option (google.api.http) = {
+      post: "/v1/payroll"
+      body: "*"
+    };
+  }
+
+  rpc GetPayroll (GetPayrollRequest) returns (GetPayrollResponse) {
+    option (google.api.http) = {
+      get: "/v1/payroll/{payroll_id}"
+    };
+  }
+
+  rpc UpdatePayroll (UpdatePayrollRequest) returns (UpdatePayrollResponse) {
+    option (google.api.http) = {
+      put: "/v1/payroll/{payroll_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeletePayroll (DeletePayrollRequest) returns (DeletePayrollResponse) {
+    option (google.api.http) = {
+      delete: "/v1/payroll/{payroll_id}"
+    };
+  }
+
+  rpc ListPayrolls (ListPayrollsRequest) returns (ListPayrollsResponse) {
+    option (google.api.http) = {
+      get: "/v1/payrolls"
+    };
+  }
+
+  rpc AddPayrollDetail (AddPayrollDetailRequest) returns (AddPayrollDetailResponse) {
+    option (google.api.http) = {
+      post: "/v1/payroll/{payroll_id}/detail"
+      body: "*"
+    };
+  }
+
+  rpc GetPayslip (GetPayslipRequest) returns (GetPayslipResponse) {
+    option (google.api.http) = {
+      get: "/v1/payroll/{payroll_id}/payslip"
+    };
+  }
+
+  // ------------------ Leave Request Endpoints ------------------
+
+  rpc CreateRequestLeave (RequestLeaveRequest) returns (RequestLeaveResponse) {
+    option (google.api.http) = {
+      post: "/v1/leave"
+      body: "*"
+    };
+  }
+
+  rpc GetLeave (GetLeaveRequest) returns (GetLeaveResponse) {
+    option (google.api.http) = {
+      get: "/v1/leave/{leave_id}"
+    };
+  }
+
+  rpc ApproveLeave (ApproveLeaveRequest) returns (ApproveLeaveResponse) {
+    option (google.api.http) = {
+      put: "/v1/leave/{leave_id}/approve"
+      body: "*"
+    };
+  }
+
+  rpc ListLeaveRequests (ListLeaveRequestsRequest) returns (ListLeaveRequestsResponse) {
+    option (google.api.http) = {
+      get: "/v1/leave"
+    };
+  }
+
+  rpc GetLeaveBalance (GetLeaveBalanceRequest) returns (GetLeaveBalanceResponse) {
+    option (google.api.http) = {
+        get: "/v1/leave/balance/{staff_id}/{leave_type}/{year}"
+    };
+  }
+
+  rpc GetStaffLeaveBalances (GetStaffLeaveBalancesRequest) returns (GetStaffLeaveBalancesResponse) {
+      option (google.api.http) = {
+          get: "/v1/leave/balances/{staff_id}/{year}"
+      };
+  }
+
+  rpc SetLeaveEntitlement (SetLeaveEntitlementRequest) returns (SetLeaveEntitlementResponse) {
+      option (google.api.http) = {
+          post: "/v1/leave/entitlement"
+          body: "*"
+      };
+  }
+
+  // ------------------ Department Endpoints ------------------
+
+  rpc CreateDepartment (CreateDepartmentRequest) returns (CreateDepartmentResponse) {
+    option (google.api.http) = {
+      post: "/v1/department"
+      body: "*"
+    };
+  }
+  
+  rpc GetDepartment (GetDepartmentRequest) returns (GetDepartmentResponse) {
+    option (google.api.http) = {
+      get: "/v1/department/{department_id}"
+    };
+  }
+  
+  rpc UpdateDepartment (UpdateDepartmentRequest) returns (UpdateDepartmentResponse) {
+    option (google.api.http) = {
+      put: "/v1/department/{department_id}"
+      body: "*"
+    };
+  }
+  
+  rpc DeleteDepartment (DeleteDepartmentRequest) returns (DeleteDepartmentResponse) {
+    option (google.api.http) = {
+      delete: "/v1/department/{department_id}"
+    };
+  }
+
+  rpc ListDepartments (ListDepartmentsRequest) returns (ListDepartmentsResponse) {
+    option (google.api.http) = {
+      get: "/v1/departments"
+    };
+  }
+
+  // ------------------ Attendance Endpoints ------------------
+
+  rpc RecordAttendance (RecordAttendanceRequest) returns (RecordAttendanceResponse) {
+    option (google.api.http) = {
+      post: "/v1/attendance"
+      body: "*"
+    };
+  }
+
+  rpc GetAttendance (GetAttendanceRequest) returns (GetAttendanceResponse) {
+    option (google.api.http) = {
+      get: "/v1/attendance/{attendance_id}"
+    };
+  }
+
+  rpc ListAttendance (ListAttendanceRequest) returns (ListAttendanceResponse) {
+    option (google.api.http) = {
+      get: "/v1/attendance"
+    };
+  }
+
+  rpc GetAttendanceStatistics (GetAttendanceStatisticsRequest) returns (GetAttendanceStatisticsResponse) {
+    option (google.api.http) = {
+      get: "/v1/attendance/statistics"
+    };
+  }
+
+  // ------------------ Staff Benefits/Deductions Endpoints ------------------
+  rpc AddStaffBenefit (AddStaffBenefitRequest) returns (AddStaffBenefitResponse) {
+    option (google.api.http) = {
+      post: "/v1/staff/{staff_id}/benefits"
+      body: "*"
+    };
+  }
+
+  rpc RemoveStaffBenefit (RemoveStaffBenefitRequest) returns (RemoveStaffBenefitResponse) {
+    option (google.api.http) = {
+      delete: "/v1/staff/{staff_id}/benefits/{benefit_id}"
+    };
+  }
+
+  rpc ListStaffBenefits (ListStaffBenefitsRequest) returns (ListStaffBenefitsResponse) {
+    option (google.api.http) = {
+      get: "/v1/staff/{staff_id}/benefits"
+    };
+  }
+
+  // ------------------ Bank Details Endpoints ------------------
+
+  rpc GetStaffBankDetails (GetStaffBankDetailsRequest) returns (GetStaffBankDetailsResponse) {
+    option (google.api.http) = {
+      get: "/v1/staff/{staff_id}/bank-details"
+    };
+  }
+
+  rpc UpsertStaffBankDetails (UpsertStaffBankDetailsRequest) returns (UpsertStaffBankDetailsResponse) {
+    option (google.api.http) = {
+      post: "/v1/staff/{staff_id}/bank-details"
+      body: "*"
+    };
+  }
+
+  rpc DeleteStaffBankDetails (DeleteStaffBankDetailsRequest) returns (DeleteStaffBankDetailsResponse) {
+    option (google.api.http) = {
+      delete: "/v1/staff/{staff_id}/bank-details"
+    };
+  }
+
+  rpc ListAllBankDetails (ListAllBankDetailsRequest) returns (ListAllBankDetailsResponse) {
+    option (google.api.http) = {
+      get: "/v1/staff/bank-details"
+    };
+  }
+}
+
+// ------------------ Staff Messages ------------------
+
+message RegisterStaffRequest {
+  string first_name = 1;
+  string last_name = 2;
+  string gender = 3;
+  string dob = 4;
+  string email = 5;
+  string phone_number = 6;
+  string category = 7;
+  string status = 8;
+  string role = 9;
+  string hire_date = 10;
+  int32 department_id = 11;
+  string profile_picture = 12;
+  bool tax_required = 13;
+  bool pension_required = 14;
+  string tax = 15;
+  string pension = 16;
+  string specialization = 17;
+}
+
+message RegisterStaffResponse {
+  int32 staff_id = 1;
+  string message = 2;
+}
+
+message GetStaffRequest {
+  int32 staff_id = 1;
+}
+
+message GetStaffResponse {
+  int32 staff_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string gender = 4;
+  string dob = 5;
+  string email = 6;
+  string phone_number = 7;
+  string category = 8;
+  string status = 9;
+  string role = 10;
+  string hire_date = 11;
+  string created_at = 12;
+  int32 department_id = 13;
+  string department_name = 14;
+  bool tax_required = 15;
+  bool pension_required = 16;
+  string tax = 17;
+  string pension = 18;
+  string specialization = 19; 
+}
+
+message UpdateStaffRequest {
+  int32 staff_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string gender = 4;
+  string dob = 5;
+  string email = 6;
+  string phone_number = 7;
+  string profile_picture = 8;
+  string category = 9;
+  string status = 10;
+  string role = 11;
+  string hire_date = 12;
+  int32 department_id = 13;
+  bool tax_required = 14;
+  bool pension_required = 15;
+  string tax = 16;
+  string pension = 17;
+  string specialization = 18;
+}
+
+message UpdateStaffResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteStaffRequest {
+  int32 staff_id = 1;
+}
+
+message DeleteStaffResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListStaffRequest {}
+
+message ListStaffResponse {
+  repeated GetStaffResponse staff_list = 1;
+}
+
+message IsStaffAvailableRequest {
+  int32 staff_id = 1;
+  string date = 2;
+  string time = 3;
+}
+
+message IsStaffAvailableResponse {
+  bool available = 1;
+  string message = 2;
+}
+
+// ------------------ Payroll Messages ------------------
+
+message PayrollDetail {
+  int32 detail_id = 1;
+  string type = 2; // ALLOWANCE, DEDUCTION, BENEFIT
+  string name = 3;
+  double amount = 4;
+}
+
+message CreatePayrollRequest {
+  int32 staff_id = 1;
+  double basic_salary = 2;
+  double allowances = 3;
+  double deductions = 4;
+  double tax_deducted = 5;
+  double pension_contribution = 6;
+  string pay_date = 7;
+  string payment_status = 8;
+}
+
+message CreatePayrollResponse {
+  int32 payroll_id = 1;
+  string message = 2;
+}
+
+message GetPayrollRequest {
+  int32 payroll_id = 1;
+}
+
+message GetPayrollResponse {
+  int32 payroll_id = 1;
+  int32 staff_id = 2;
+  double basic_salary = 3;
+  double allowances = 4;
+  double deductions = 5;
+  double tax_deducted = 6;
+  double pension_contribution = 7;
+  double net_salary = 8;
+  string pay_date = 9;
+  string payment_status = 10;
+  string created_at = 11;
+  string full_name = 12;
+  string department = 13;
+  repeated PayrollDetail details = 14;
+  repeated StaffBenefit benefit_details = 15;
+}
+
+message UpdatePayrollRequest {
+  int32 payroll_id = 1;
+  double basic_salary = 2;
+  double allowances = 3;
+  double deductions = 4;
+  double tax_deducted = 5;
+  double pension_contribution = 6;
+  string payment_status = 7;
+}
+
+message UpdatePayrollResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeletePayrollRequest {
+  int32 payroll_id = 1;
+}
+
+message DeletePayrollResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListPayrollsRequest {}
+
+message ListPayrollsResponse {
+  repeated GetPayrollResponse payrolls = 1;
+}
+
+message AddPayrollDetailRequest {
+  int32 payroll_id = 1;
+  string type = 2; // ALLOWANCE, DEDUCTION, BENEFIT
+  string name = 3;
+  double amount = 4;
+}
+
+message AddPayrollDetailResponse {
+  int32 detail_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message PayItem {
+  string name = 1;
+  double amount = 2;
+}
+
+message GetPayslipRequest {
+  int32 payroll_id = 1;
+}
+
+message GetPayslipResponse {
+  // Payslip metadata
+  string payslip_id = 1;
+  int32 payroll_id = 2;
+  string pay_period = 3;
+  string issued_on = 4;
+  
+  // Company information
+  string company_name = 5;
+  string company_address = 6;
+  
+  // Employee information
+  string employee_id = 7;
+  string employee_name = 8;
+  string employee_email = 9;
+  string department = 10;
+  string designation = 11;
+  
+  // Bank details
+  string bank_name = 12;
+  string account_number = 13;
+  string pan_number = 14;
+  string tax = 15;
+  string pension = 16;
+  
+  // Salary details
+  double basic_salary = 17;
+  double total_allowances = 18;
+  double total_deductions = 19;
+  double tax_deducted = 20;
+  double pension_contribution = 21;
+  double net_salary = 22;
+  
+  // Detailed breakdown
+  repeated PayItem earnings = 23;
+  repeated PayItem deductions = 24;
+}
+
+// ------------------ Leave Messages ------------------
+
+message RequestLeaveRequest {
+  int32 staff_id = 1;
+  string leave_type = 2;
+  string start_date = 3;
+  string end_date = 4;
+  string reason = 5;
+}
+
+message RequestLeaveResponse {
+  int32 leave_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetLeaveRequest {
+  int32 leave_id = 1;
+}
+
+message GetLeaveResponse {
+  int32 leave_id = 1;
+  int32 staff_id = 2;
+  string staff_name = 3;
+  string leave_type = 4;
+  string start_date = 5;
+  string end_date = 6;
+  string status = 7;
+  string reason = 8;
+  string created_at = 9;
+  bool hr_approved = 10;
+  bool manager_approved = 11;
+  int32 hr_approver_id = 12;
+  int32 manager_approver_id = 13;
+  string hr_approver_name = 14;
+  string manager_approver_name = 15;
+}
+
+message ApproveLeaveRequest {
+  int32 leave_id = 1;
+  string approver_type = 2; // HR or MANAGER
+  int32 approver_id = 3;
+  bool approved = 4;
+}
+
+message ApproveLeaveResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListLeaveRequestsRequest {}
+
+message ListLeaveRequestsResponse {
+  repeated GetLeaveResponse leave_requests = 1;
+}
+
+message LeaveBalance {
+  string leave_type = 1;
+  int32 total_entitled = 2;
+  int32 used = 3;
+  int32 remaining = 4;
+  int32 year = 5;
+}
+
+message GetLeaveBalanceRequest {
+  int32 staff_id = 1;
+  string leave_type = 2;
+  int32 year = 3;
+}
+
+message GetLeaveBalanceResponse {
+  int32 remaining = 1;
+}
+
+message GetStaffLeaveBalancesRequest {
+  int32 staff_id = 1;
+  int32 year = 2;
+}
+
+message GetStaffLeaveBalancesResponse {
+  repeated LeaveBalance balances = 1;
+}
+
+message SetLeaveEntitlementRequest {
+  int32 staff_id = 1;
+  string leave_type = 2;
+  int32 days = 3;
+  int32 year = 4;
+}
+
+message SetLeaveEntitlementResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// ------------------ Department Messages ------------------
+
+message CreateDepartmentRequest {
+  string department_name = 1;
+  string description = 2;
+  repeated string roles = 3;
+}
+
+message CreateDepartmentResponse {
+  int32 department_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetDepartmentRequest {
+  int32 department_id = 1;
+}
+
+message GetDepartmentResponse {
+  int32 department_id = 1;
+  string department_name = 2;
+  string description = 3;
+  string created_at = 4;
+  int32 staff_count = 5;
+  repeated string roles = 6;
+}
+
+message DeleteDepartmentRequest {
+  int32 department_id = 1;
+}
+
+message DeleteDepartmentResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message UpdateDepartmentRequest {
+  int32 department_id = 1;
+  string department_name = 2;
+  string description = 3;
+  repeated string roles = 4;
+}
+
+message UpdateDepartmentResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListDepartmentsRequest {}
+
+message ListDepartmentsResponse {
+  repeated GetDepartmentResponse departments = 1;
+}
+
+// ------------------ Attendance Messages ------------------
+
+message RecordAttendanceRequest {
+  int32 staff_id = 1;
+  string date = 2;
+  string check_in = 3;
+  string check_out = 4;
+  string expected_check_in = 5;
+  string expected_check_out = 6;
+  string status = 7; // PRESENT, ABSENT, LATE, HALF_DAY, ON_LEAVE
+}
+
+message RecordAttendanceResponse {
+  int32 attendance_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetAttendanceRequest {
+  int32 attendance_id = 1;
+}
+
+message GetAttendanceResponse {
+  int32 attendance_id = 1;
+  int32 staff_id = 2;
+  string staff_name = 3;
+  string date = 4;
+  string check_in = 5;
+  string check_out = 6;
+  string expected_check_in = 7;
+  string expected_check_out = 8;
+  int32 early_minutes = 9;
+  int32 late_minutes = 10;
+  string status = 11;
+  string created_at = 12;
+  int32 department_id = 13;
+  string department_name = 14;
+}
+
+message ListAttendanceRequest {
+  int32 staff_id = 1;
+  string start_date = 2;
+  string end_date = 3;
+}
+
+message ListAttendanceResponse {
+  repeated GetAttendanceResponse attendance = 1;
+}
+
+message DepartmentAttendanceStats {
+  int32 department_id = 1;
+  string department_name = 2;
+  int32 total_staff = 3;
+  int32 total_records = 4;
+  int32 present_count = 5;
+  int32 absent_count = 6;
+  int32 late_count = 7;
+  int32 half_day_count = 8;
+  int32 on_leave_count = 9;
+  float attendance_rate = 10;
+  float punctuality_rate = 11;
+  int32 total_early_minutes = 12;
+  int32 total_late_minutes = 13;
+}
+
+message GetAttendanceStatisticsRequest {
+  int32 department_id = 1; // Optional, 0 means all departments
+  int32 month = 2;
+  int32 year = 3;
+}
+
+message GetAttendanceStatisticsResponse {
+  int32 month = 1;
+  int32 year = 2;
+  int32 total_departments = 3;
+  int32 total_staff = 4;
+  int32 total_records = 5;
+  int32 total_present_count = 6;
+  int32 total_absent_count = 7;
+  int32 total_late_count = 8;
+  float overall_attendance_rate = 9;
+  float overall_punctuality_rate = 10;
+  int32 total_early_minutes = 11;
+  int32 total_late_minutes = 12;
+  repeated DepartmentAttendanceStats department_stats = 13;
+}
+
+// ------------------ Staff Benefits/Deductions Messages ------------------
+
+message StaffBenefit {
+  int32 benefit_id = 1;
+  string type = 2;  // ALLOWANCE, DEDUCTION, BENEFIT
+  string name = 3;
+  string description = 4;
+  double amount = 5;
+  string frequency = 6;  // MONTHLY, YEARLY, ONE_TIME
+  bool is_taxable = 7;
+  string start_date = 8;
+  string end_date = 9;
+}
+
+message AddStaffBenefitRequest {
+  int32 staff_id = 1;
+  string type = 2;
+  string name = 3;
+  string description = 4;
+  double amount = 5;
+  string frequency = 6;
+  bool is_taxable = 7;
+  string start_date = 8;
+  string end_date = 9;
+}
+
+message AddStaffBenefitResponse {
+  int32 benefit_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message RemoveStaffBenefitRequest {
+  int32 staff_id = 1;
+  int32 benefit_id = 2;
+}
+
+message RemoveStaffBenefitResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListStaffBenefitsRequest {
+  int32 staff_id = 1;
+  string type = 2;  // optional filter
+  bool active_only = 3;  // show only active benefits
+}
+
+message ListStaffBenefitsResponse {
+  repeated StaffBenefit benefits = 1;
+}
+
+// ------------------ Bank Details Messages ------------------
+
+message StaffBankDetails {
+  int32 id = 1;
+  int32 staff_id = 2;
+  string bank_name = 3;
+  string account_number = 4;
+  string pan_number = 5;
+  string created_at = 6;
+  string updated_at = 7;
+  string account_holder = 8;
+}
+
+message GetStaffBankDetailsRequest {
+  int32 staff_id = 1;
+}
+
+message GetStaffBankDetailsResponse {
+  StaffBankDetails bank_details = 1;
+  string message = 2;
+}
+
+message UpsertStaffBankDetailsRequest {
+  int32 staff_id = 1;
+  string bank_name = 2;
+  string account_number = 3;
+  string pan_number = 4;
+}
+
+message UpsertStaffBankDetailsResponse {
+  StaffBankDetails bank_details = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message DeleteStaffBankDetailsRequest {
+  int32 staff_id = 1;
+}
+
+message DeleteStaffBankDetailsResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListAllBankDetailsRequest {}
+
+message ListAllBankDetailsResponse {
+  repeated StaffBankDetails bank_details = 1;
+}

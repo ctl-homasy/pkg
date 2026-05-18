@@ -1,0 +1,1455 @@
+// supply_chain_service.proto
+
+syntax = "proto3";
+
+package supply_chain;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./shared/supply-chain-service/proto";
+
+// Common message for items in the supply chain
+message StockItem {
+  string id = 1 [json_name="id"];
+  string name = 2 [json_name="name"];
+  string description = 3 [json_name="description"];
+  string sku = 4 [json_name="sku"];
+  string barcode = 5 [json_name="barcode"];
+  string unit_of_measure = 6 [json_name="unitOfMeasure"];
+  double reorder_level = 8 [json_name="reorderLevel"];
+  double minimum_level = 9 [json_name="minimumLevel"];
+  double maximum_level = 10 [json_name="maximumLevel"];
+  double unit_cost = 11 [json_name="unitCost"];
+  double unit_price = 12 [json_name="unitPrice"];
+  double tax_rate = 13 [json_name="taxRate"];
+  bool is_active = 14 [json_name="isActive"];
+  bool expiry_tracking = 15 [json_name="expiryTracking"];
+  bool batch_tracking = 16 [json_name="batchTracking"];
+  string category = 17 [json_name="category"];
+  double markup_percentage = 18 [json_name="markupPercentage"]; // Markup percentage for calculating unit_price from unit_cost
+  string created_at = 19 [json_name="createdAt"];
+  string updated_at = 20 [json_name="updatedAt"];
+  double quantity_in_store = 21 [json_name="quantityInStore"];
+  string bin_location = 22 [json_name="binLocation"];
+}
+
+// Message for a store location
+message Store {
+  string id = 1 [json_name="id"];
+  string name = 2 [json_name="name"];
+  string location = 3 [json_name="location"];
+  string type = 4 [json_name="type"];
+  bool is_active = 5 [json_name="isActive"];
+  string created_at = 6 [json_name="createdAt"];
+  string updated_at = 7 [json_name="updatedAt"];
+}
+
+// Message for a supplier
+message Supplier {
+  string id = 1 [json_name="id"];
+  string name = 2 [json_name="name"];
+  string contact_person = 3 [json_name="contactPerson"];
+  string phone = 4 [json_name="phone"];
+  string email = 5 [json_name="email"];
+  string address = 6 [json_name="address"];
+  bool is_active = 7 [json_name="isActive"];
+  string created_at = 8 [json_name="createdAt"];
+  string updated_at = 9 [json_name="updatedAt"];
+}
+
+// Message for requisition items
+message RequisitionItem {
+  string item_id = 1 [json_name="itemId"];
+  string item_name = 2 [json_name="itemName"];
+  double quantity_requested = 3 [json_name="quantityRequested"];
+  double quantity_approved = 4 [json_name="quantityApproved"];
+  string unit_of_measure = 5 [json_name="unitOfMeasure"];
+  double estimated_unit_price = 6 [json_name="estimatedUnitPrice"];
+  string notes = 7 [json_name="notes"];
+}
+
+// Message for requisition
+message Requisition {
+  string id = 1 [json_name="id"];
+  string requisition_number = 2 [json_name="requisitionNumber"];
+  string requestor_id = 3 [json_name="requestorId"];
+  string requestor_name = 4 [json_name="requestorName"];
+  string requestor_signature = 5 [json_name="requestorSignature"];
+  string requesting_store_id = 6 [json_name="requestingStoreId"];
+  string requesting_store_name = 7 [json_name="requestingStoreName"];
+  string supplier_id = 8 [json_name="supplierId"];
+  string supplier_name = 9 [json_name="supplierName"];
+  string status = 10 [json_name="status"];
+  string approver_id = 11 [json_name="approverId"];
+  string approver_name = 12 [json_name="approverName"];
+  string approver_signature = 13 [json_name="approverSignature"];
+  string approval_date = 14 [json_name="approvalDate"];
+  string notes = 15 [json_name="notes"];
+  string created_at = 16 [json_name="createdAt"];
+  string updated_at = 17 [json_name="updatedAt"];
+  repeated RequisitionItem items = 18 [json_name="items"];
+  string tracking_id = 19 [json_name="trackingId"];
+}
+
+// Message for LPO items
+message LPOItem {
+  string item_id = 1 [json_name="itemId"];
+  string item_name = 2 [json_name="itemName"];
+  double quantity_requested = 3 [json_name="quantityRequested"];
+  string unit_of_measure = 4 [json_name="unitOfMeasure"];
+}
+
+// Message for LPO (Local Purchase Order)
+message LocalPurchaseOrder {
+  string id = 1 [json_name="id"];
+  string lpo_number = 2 [json_name="lpoNumber"];
+  string requisition_id = 3 [json_name="requisitionId"];
+  string requisition_number = 4 [json_name="requisitionNumber"];
+  string supplier_id = 5 [json_name="supplierId"];
+  string supplier_name = 6 [json_name="supplierName"];
+  string store_id = 7 [json_name="storeId"];
+  string store_name = 8 [json_name="storeName"];
+  string status = 9 [json_name="status"];
+  string authorizer_id = 10 [json_name="authorizerId"];
+  string authorizer_name = 11 [json_name="authorizerName"];
+  string authorizer_signature = 12 [json_name="authorizerSignature"];
+  string authorization_date = 13 [json_name="authorizationDate"];
+  string created_at = 14 [json_name="createdAt"];
+  string updated_at = 15 [json_name="updatedAt"];
+  repeated LPOItem items = 16 [json_name="items"];
+}
+
+// Message for Goods Received Note (GRN)
+message GoodsReceivedNote {
+  string id = 1 [json_name="id"];
+  string grn_number = 2 [json_name="grnNumber"];
+  string lpo_id = 3 [json_name="lpoId"];
+  string lpo_number = 4 [json_name="lpoNumber"];
+  string supplier_id = 5 [json_name="supplierId"];
+  string supplier_name = 6 [json_name="supplierName"];
+  string store_id = 7 [json_name="storeId"];
+  string store_name = 8 [json_name="storeName"];
+  string delivery_note_number = 9 [json_name="deliveryNoteNumber"];
+  string invoice_number = 10 [json_name="invoiceNumber"];
+  string status = 11 [json_name="status"];
+  string receiver_id = 12 [json_name="receiverId"];
+  string receiver_name = 13 [json_name="receiverName"];
+  string receiver_signature = 14 [json_name="receiverSignature"];
+  string checker_id = 15 [json_name="checkerId"];
+  string checker_name = 16 [json_name="checkerName"];
+  string check_date = 17 [json_name="checkDate"];
+  string notes = 18 [json_name="notes"];
+  string created_at = 19 [json_name="createdAt"];
+  string updated_at = 20 [json_name="updatedAt"];
+  repeated GoodsReceivedItem items = 21 [json_name="items"];
+  double total_cost = 22 [json_name="totalCost"];
+}
+
+// Message for items in GRN
+message GoodsReceivedItem {
+  string item_id = 1 [json_name="itemId"];
+  string item_name = 2 [json_name="itemName"];
+  double ordered_quantity = 3 [json_name="orderedQuantity"];
+  double received_quantity = 4 [json_name="receivedQuantity"]; 
+  double accepted_quantity = 5 [json_name="acceptedQuantity"];
+  double rejected_quantity = 6 [json_name="rejectedQuantity"];
+  string rejection_reason = 7 [json_name="rejectionReason"];
+  string unit_of_measure = 8 [json_name="unitOfMeasure"];
+  string batch_number = 9 [json_name="batchNumber"];
+  string expiry_date = 10 [json_name="expiryDate"];
+  string bin_number = 11 [json_name="binNumber"];
+  string notes = 12 [json_name="notes"];
+  double unit_cost = 13 [json_name="unitCost"];
+  double total_cost = 14 [json_name="totalCost"];
+}
+
+// Message for stock adjustment
+message StockAdjustment {
+  string id = 1 [json_name="id"];
+  string adjustment_number = 2 [json_name="adjustmentNumber"];
+  string store_id = 3 [json_name="storeId"];
+  string store_name = 4 [json_name="storeName"];
+  string reason = 5 [json_name="reason"];
+  string notes = 6 [json_name="notes"];
+  string status = 7 [json_name="status"];
+  string authorizer_id = 8 [json_name="authorizerId"];
+  string authorizer_name = 9 [json_name="authorizerName"];
+  string authorizer_signature = 10 [json_name="authorizerSignature"];
+  string created_at = 11 [json_name="createdAt"];
+  string updated_at = 12 [json_name="updatedAt"];
+  repeated StockAdjustmentItem items = 13 [json_name="items"];
+}
+
+// Message for stock adjustment items
+message StockAdjustmentItem {
+  string item_id = 1 [json_name="itemId"];
+  string item_name = 2 [json_name="itemName"];
+  double adjusted_quantity = 4 [json_name="adjustedQuantity"];
+  string unit_of_measure = 5 [json_name="unitOfMeasure"];
+  string notes = 6 [json_name="notes"];
+}
+
+// Message for inter-store transfer
+message InterStoreTransfer {
+  string id = 1 [json_name="id"];
+  string transfer_number = 2 [json_name="transferNumber"];
+  string source_store_id = 3 [json_name="sourceStoreId"];
+  string source_store_name = 4 [json_name="sourceStoreName"];
+  string destination_store_id = 5 [json_name="destinationStoreId"];
+  string destination_store_name = 6 [json_name="destinationStoreName"];
+  string status = 7 [json_name="status"];
+  string requestor_id = 8 [json_name="requestorId"];
+  string requestor_name = 9 [json_name="requestorName"];
+  string requestor_signature = 10 [json_name="requestorSignature"];
+  string approver_id = 11 [json_name="approverId"];
+  string approver_name = 12 [json_name="approverName"];
+  string approver_signature = 13 [json_name="approverSignature"];
+  string receiver_id = 14 [json_name="receiverId"];
+  string receiver_name = 15 [json_name="receiverName"];
+  string receiver_signature = 16 [json_name="receiverSignature"];
+  string reason = 17 [json_name="reason"];
+  string notes = 18 [json_name="notes"];
+  string created_at = 19 [json_name="createdAt"];
+  string updated_at = 20 [json_name="updatedAt"];
+  repeated InterStoreTransferItem items = 21 [json_name="items"];
+}
+
+// Message for inter-store transfer items
+message InterStoreTransferItem {
+  string item_id = 1 [json_name="itemId"];
+  string item_name = 2 [json_name="itemName"];
+  double transfer_quantity = 4 [json_name="transferQuantity"];
+  double received_quantity = 5 [json_name="receivedQuantity"];
+  string unit_of_measure = 6 [json_name="unitOfMeasure"];
+  string notes = 7 [json_name="notes"];
+  string bin_location = 8 [json_name="binLocation"];
+}
+
+// Message for credit note
+message CreditNote {
+  string id = 1;
+  string credit_note_number = 2;
+  string grn_id = 3;
+  string grn_number = 4;
+  string supplier_id = 5;
+  string supplier_name = 6;
+  string store_id = 7;
+  string store_name = 8;
+  string issuer_id = 9;
+  string issuer_name = 10;
+  string issuer_signature = 11;
+  string approver_id = 12;
+  string approver_name = 13;
+  string approver_signature = 14;
+  string reason = 15;
+  string notes = 16;
+  string status = 17;
+  string created_at = 18;
+  string updated_at = 19;
+  repeated CreditNoteItem items = 20;
+  double total_value = 21;
+}
+
+// Message for credit note items
+message CreditNoteItem {
+  string item_id = 1;
+  string item_name = 2;
+  double received_quantity = 3;
+  double accepted_quantity = 4;
+  double return_quantity = 5;
+  string unit_of_measure = 6;
+  string batch_number = 7;
+  string expiry_date = 8;
+  string reason = 9;
+  string notes = 10;
+  double unit_price = 11;
+  double total_value = 12;
+}
+
+message PriceList {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+    bool is_active = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
+
+message PriceListItem {
+    int32 id = 1;
+    int32 price_list_id = 2;
+    int32 stock_item_id = 3;
+    double selling_price = 4;
+    google.protobuf.Timestamp valid_from = 5;
+    google.protobuf.Timestamp valid_to = 6;
+}
+
+message MedicalScheme {
+    int32 id = 1;
+    string name = 2;
+    int32 customer_id = 3;
+    bool is_active = 4;
+    double coverage_percentage = 5;        // Percentage covered by scheme (0-100)
+    bool covers_consultation = 6;          // Whether scheme covers consultations
+    bool covers_medication = 7;            // Whether scheme covers medications
+    bool covers_laboratory = 8;            // Whether scheme covers lab tests
+    double annual_limit = 9;               // Annual coverage limit per patient
+    double consultation_limit = 10;        // Limit per consultation
+    double copay_percentage = 11;          // Patient copayment percentage
+    double copay_fixed_amount = 12;        // Fixed copayment amount
+}
+
+message ReduceStockItemRequest {
+    int32 stock_item_id = 1;
+    double quantity = 2;
+}
+
+message ReduceStockItemResponse {
+    int32 stock_item_id = 1;
+    double quantity = 2;
+}
+
+message ReduceStockFromStoreRequest {
+    string stock_item_id = 1;
+    string store_id = 2;
+    double quantity = 3;
+}
+
+message ReduceStockFromStoreResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Request and Response messages for Manual Stock Update
+message ManualStockUpdateRequest {
+    string store_id = 1;
+    string item_id = 2;
+    string category = 3;
+    double quantity = 4; // Use positive values to increase, negative to decrease
+}
+
+message ManualStockUpdateResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+service SupplyChainService {
+  // Stock Item Management
+  rpc CreateStockItem (CreateStockItemRequest) returns (CreateStockItemResponse) {
+    option (google.api.http) = {
+      post: "/v1/stock-items"
+      body: "*"
+    };
+  }
+  
+  rpc GetStockItem (GetStockItemRequest) returns (GetStockItemResponse) {
+    option (google.api.http) = {
+      get: "/v1/stock-items/{id}"
+    };
+  }
+  
+  rpc UpdateStockItem (UpdateStockItemRequest) returns (UpdateStockItemResponse) {
+    option (google.api.http) = {
+      put: "/v1/stock-items/{id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteStockItem (DeleteStockItemRequest) returns (DeleteStockItemResponse) {
+    option (google.api.http) = {
+      delete: "/v1/stock-items/{id}"
+    };
+  }
+
+  rpc ReduceStockItem (ReduceStockItemRequest) returns (ReduceStockItemResponse) {
+    option (google.api.http) = {
+      post: "/v1/stock-items/reduce"
+      body: "*"
+    };
+  }
+
+  rpc ReduceStockFromStore (ReduceStockFromStoreRequest) returns (ReduceStockFromStoreResponse) {
+    option (google.api.http) = {
+      post: "/v1/stock-items/reduce-from-store"
+      body: "*"
+    };
+  }
+
+  // Manual Stock Update
+  rpc ManualStockUpdate (ManualStockUpdateRequest) returns (ManualStockUpdateResponse) {
+    option (google.api.http) = {
+      post: "/v1/stock-items/manual-update"
+      body: "*"
+    };
+  }
+
+  rpc ListStockItems (ListStockItemsRequest) returns (ListStockItemsResponse) {
+    option (google.api.http) = {
+      get: "/v1/stock-items"
+    };
+  }
+  
+  rpc GetStockLevels (GetStockLevelsRequest) returns (GetStockLevelsResponse) {
+    option (google.api.http) = {
+      get: "/v1/stock-levels"
+    };
+  }
+  
+  rpc GetExpiringItems (GetExpiringItemsRequest) returns (GetExpiringItemsResponse) {
+    option (google.api.http) = {
+      get: "/v1/expiring-items"
+    };
+  }
+  
+  rpc GetItemsBelowReorderLevel (GetItemsBelowReorderLevelRequest) returns (GetItemsBelowReorderLevelResponse) {
+    option (google.api.http) = {
+      get: "/v1/low-stock-items"
+    };
+  }
+  
+  // Store Management
+  rpc CreateStore (CreateStoreRequest) returns (CreateStoreResponse) {
+    option (google.api.http) = {
+      post: "/v1/stores"
+      body: "*"
+    };
+  }
+  
+  rpc ListStores (ListStoresRequest) returns (ListStoresResponse) {
+    option (google.api.http) = {
+      get: "/v1/stores"
+    };
+  }
+
+  rpc GetStore (GetStoreRequest) returns (GetStoreResponse) {
+    option (google.api.http) = {
+      get: "/v1/stores/{id}"
+    };
+  }
+
+  rpc UpdateStore (UpdateStoreRequest) returns (UpdateStoreResponse) {
+    option (google.api.http) = {
+      put: "/v1/stores/{id}",
+      body: "store"
+    };
+  }
+
+  rpc DeleteStore (DeleteStoreRequest) returns (DeleteStoreResponse) {
+    option (google.api.http) = {
+      delete: "/v1/stores/{id}"
+    };
+  }
+  
+  // Supplier Management
+  rpc CreateSupplier (CreateSupplierRequest) returns (CreateSupplierResponse) {
+    option (google.api.http) = {
+      post: "/v1/suppliers",
+      body: "supplier"
+    };
+  }
+  
+  rpc ListSuppliers (ListSuppliersRequest) returns (ListSuppliersResponse) {
+    option (google.api.http) = {
+      get: "/v1/suppliers"
+    };
+  }
+
+  rpc GetSupplier (GetSupplierRequest) returns (GetSupplierResponse) {
+    option (google.api.http) = {
+      get: "/v1/suppliers/{id}"
+    };
+  }
+
+  rpc UpdateSupplier (UpdateSupplierRequest) returns (UpdateSupplierResponse) {
+    option (google.api.http) = {
+      put: "/v1/suppliers/{id}",
+      body: "supplier"
+    };
+  }
+
+  rpc DeleteSupplier (DeleteSupplierRequest) returns (DeleteSupplierResponse) {
+    option (google.api.http) = {
+      delete: "/v1/suppliers/{id}"
+    };
+  }
+  
+  // Requisition Management
+  rpc CreateRequisition (CreateRequisitionRequest) returns (CreateRequisitionResponse) {
+    option (google.api.http) = {
+      post: "/v1/requisitions"
+      body: "*"
+    };
+  }
+  
+  rpc ApproveRequisition (ApproveRequisitionRequest) returns (ApproveRequisitionResponse) {
+    option (google.api.http) = {
+      post: "/v1/requisitions/{id}/approve"
+      body: "*"
+    };
+  }
+  
+  rpc RejectRequisition (RejectRequisitionRequest) returns (RejectRequisitionResponse) {
+    option (google.api.http) = {
+      post: "/v1/requisitions/{id}/reject"
+      body: "*"
+    };
+  }
+  
+  rpc GetRequisition (GetRequisitionRequest) returns (GetRequisitionResponse) {
+    option (google.api.http) = {
+      get: "/v1/requisitions/{id}"
+    };
+  }
+  
+  rpc ListRequisitions (ListRequisitionsRequest) returns (ListRequisitionsResponse) {
+    option (google.api.http) = {
+      get: "/v1/requisitions"
+    };
+  }
+  
+  // LPO Management
+  rpc CreateLPO (CreateLPORequest) returns (CreateLPOResponse) {
+    option (google.api.http) = {
+      post: "/v1/lpos"
+      body: "*"
+    };
+  }
+  
+  rpc ApproveLPO (ApproveLPORequest) returns (ApproveLPOResponse) {
+    option (google.api.http) = {
+      post: "/v1/lpos/{id}/approve"
+      body: "*"
+    };
+  }
+  
+  rpc RejectLPO (RejectLPORequest) returns (RejectLPOResponse) {
+    option (google.api.http) = {
+      post: "/v1/lpos/{id}/reject"
+      body: "*"
+    };
+  }
+  
+  rpc GetLPO (GetLPORequest) returns (GetLPOResponse) {
+    option (google.api.http) = {
+      get: "/v1/lpos/{id}"
+    };
+  }
+  
+  rpc ListLPOs (ListLPOsRequest) returns (ListLPOsResponse) {
+    option (google.api.http) = {
+      get: "/v1/lpos"
+    };
+  }
+  
+  // GRN Management
+  rpc CreateGRN (CreateGRNRequest) returns (CreateGRNResponse) {
+    option (google.api.http) = {
+      post: "/v1/grns"
+      body: "*"
+    };
+  }
+  
+  rpc PerformQualityCheck (PerformQualityCheckRequest) returns (PerformQualityCheckResponse) {
+    option (google.api.http) = {
+      post: "/v1/grns/{id}/quality-check"
+      body: "*"
+    };
+  }
+  
+  rpc GetGRN (GetGRNRequest) returns (GetGRNResponse) {
+    option (google.api.http) = {
+      get: "/v1/grns/{id}"
+    };
+  }
+  
+  rpc ListGRNs (ListGRNsRequest) returns (ListGRNsResponse) {
+    option (google.api.http) = {
+      get: "/v1/grns"
+    };
+  }
+  
+  // Stock Adjustment
+  rpc CreateStockAdjustment (CreateStockAdjustmentRequest) returns (CreateStockAdjustmentResponse) {
+    option (google.api.http) = {
+      post: "/v1/stock-adjustments"
+      body: "*"
+    };
+  }
+
+  rpc ListStockAdjustments (ListStockAdjustmentsRequest) returns (ListStockAdjustmentsResponse) {
+    option (google.api.http) = {
+      get: "/v1/stock-adjustments"
+    };
+  }
+  
+  rpc ApproveStockAdjustment (ApproveStockAdjustmentRequest) returns (ApproveStockAdjustmentResponse) {
+    option (google.api.http) = {
+      post: "/v1/stock-adjustments/{id}/approve"
+      body: "*"
+    };
+  }
+  
+  rpc RejectStockAdjustment (RejectStockAdjustmentRequest) returns (RejectStockAdjustmentResponse) {
+    option (google.api.http) = {
+      post: "/v1/stock-adjustments/{id}/reject"
+      body: "*"
+    };
+  }
+  
+  rpc GetStockAdjustment (GetStockAdjustmentRequest) returns (GetStockAdjustmentResponse) {
+    option (google.api.http) = {
+      get: "/v1/stock-adjustments/{id}"
+    };
+  }
+  
+  // Inter-Store Transfer
+  rpc CreateInterStoreTransfer (CreateInterStoreTransferRequest) returns (CreateInterStoreTransferResponse) {
+    option (google.api.http) = {
+      post: "/v1/inter-store-transfers"
+      body: "*"
+    };
+  }
+  
+  rpc ApproveInterStoreTransfer (ApproveInterStoreTransferRequest) returns (ApproveInterStoreTransferResponse) {
+    option (google.api.http) = {
+      post: "/v1/inter-store-transfers/{id}/approve"
+      body: "*"
+    };
+  }
+  
+  rpc RejectInterStoreTransfer (RejectInterStoreTransferRequest) returns (RejectInterStoreTransferResponse) {
+    option (google.api.http) = {
+      post: "/v1/inter-store-transfers/{id}/reject"
+      body: "*"
+    };
+  }
+  
+  rpc ReceiveInterStoreTransfer (ReceiveInterStoreTransferRequest) returns (ReceiveInterStoreTransferResponse) {
+    option (google.api.http) = {
+      post: "/v1/inter-store-transfers/{id}/receive"
+      body: "*"
+    };
+  }
+  
+  rpc GetInterStoreTransfer (GetInterStoreTransferRequest) returns (GetInterStoreTransferResponse) {
+    option (google.api.http) = {
+      get: "/v1/inter-store-transfers/{id}"
+    };
+  }
+  
+  rpc ListInterStoreTransfers (ListInterStoreTransfersRequest) returns (ListInterStoreTransfersResponse) {
+    option (google.api.http) = {
+      get: "/v1/inter-store-transfers"
+    };
+  }
+  
+  // Credit Notes
+  rpc CreateCreditNote (CreateCreditNoteRequest) returns (CreateCreditNoteResponse) {
+    option (google.api.http) = {
+      post: "/v1/credit-notes"
+      body: "*"
+    };
+  }
+  
+  rpc ApproveCreditNote (ApproveCreditNoteRequest) returns (ApproveCreditNoteResponse) {
+    option (google.api.http) = {
+      post: "/v1/credit-notes/{id}/approve"
+      body: "*"
+    };
+  }
+  
+  rpc GetCreditNote (GetCreditNoteRequest) returns (GetCreditNoteResponse) {
+    option (google.api.http) = {
+      get: "/v1/credit-notes/{id}"
+    };
+  }
+  
+  rpc ListCreditNotes (ListCreditNotesRequest) returns (ListCreditNotesResponse) {
+    option (google.api.http) = {
+      get: "/v1/credit-notes"
+    };
+  }
+
+  // Price List Management
+  rpc CreatePriceList (CreatePriceListRequest) returns (CreatePriceListResponse) {
+    option (google.api.http) = {
+      post: "/v1/price-lists"
+      body: "*"
+    };
+  }
+
+  rpc GetPriceList (GetPriceListRequest) returns (GetPriceListResponse) {
+    option (google.api.http) = {
+      get: "/v1/price-lists/{id}"
+    };
+  }
+
+  rpc UpdatePriceList (UpdatePriceListRequest) returns (UpdatePriceListResponse) {
+    option (google.api.http) = {
+      put: "/v1/price-lists/{id}"
+      body: "*"
+    };
+  }
+
+  rpc ListPriceLists (ListPriceListsRequest) returns (ListPriceListsResponse) {
+    option (google.api.http) = {
+      get: "/v1/price-lists"
+    };
+  }
+
+  // Price List Item Management
+  rpc CreatePriceListItem (CreatePriceListItemRequest) returns (CreatePriceListItemResponse) {
+    option (google.api.http) = {
+      post: "/v1/price-list-items"
+      body: "*"
+    };
+  }
+
+  rpc GetPriceListItem (GetPriceListItemRequest) returns (GetPriceListItemResponse) {
+    option (google.api.http) = {
+      get: "/v1/price-list-items/{id}"
+    };
+  }
+
+  rpc UpdatePriceListItem (UpdatePriceListItemRequest) returns (UpdatePriceListItemResponse) {
+    option (google.api.http) = {
+      put: "/v1/price-list-items/{id}"
+      body: "*"
+    };
+  }
+
+  rpc DeletePriceListItem (DeletePriceListItemRequest) returns (DeletePriceListItemResponse) {
+    option (google.api.http) = {
+      delete: "/v1/price-list-items/{id}"
+    };
+  }
+
+  rpc ListPriceListItems (ListPriceListItemsRequest) returns (ListPriceListItemsResponse) {
+    option (google.api.http) = {
+      get: "/v1/price-list-items"
+    };
+  }
+
+  rpc GetPriceListItemsByPriceList (GetPriceListItemsByPriceListRequest) returns (GetPriceListItemsByPriceListResponse) {
+    option (google.api.http) = {
+      get: "/v1/price-lists/{price_list_id}/items"
+    };
+  }
+
+  // Medical Scheme Management
+  rpc CreateMedicalScheme (CreateMedicalSchemeRequest) returns (CreateMedicalSchemeResponse) {
+    option (google.api.http) = {
+      post: "/v1/medical-schemes"
+      body: "*"
+    };
+  }
+
+  rpc GetMedicalScheme (GetMedicalSchemeRequest) returns (GetMedicalSchemeResponse) {
+    option (google.api.http) = {
+      get: "/v1/medical-schemes/{id}"
+    };
+  }
+
+  rpc GetMedicalSchemeByName (GetMedicalSchemeByNameRequest) returns (GetMedicalSchemeResponse) {
+    option (google.api.http) = {
+      get: "/v1/medical-schemes/name/{name}"
+    };
+  }
+
+  rpc UpdateMedicalScheme (UpdateMedicalSchemeRequest) returns (UpdateMedicalSchemeResponse) {
+    option (google.api.http) = {
+      put: "/v1/medical-schemes/{id}"
+      body: "*"
+    };
+  }
+
+  rpc ListMedicalSchemes (ListMedicalSchemesRequest) returns (ListMedicalSchemesResponse) {
+    option (google.api.http) = {
+      get: "/v1/medical-schemes"
+    };
+  }
+
+  // Stock Quantities - NEW ENDPOINTS FOR PHARMACY SERVICE
+  rpc GetStoreStockQuantities (GetStoreStockQuantitiesRequest) returns (GetStoreStockQuantitiesResponse) {
+    option (google.api.http) = {
+      get: "/v1/stores/{store_id}/stock-quantities"
+    };
+  }
+
+  rpc GetItemQuantityInStore (GetItemQuantityInStoreRequest) returns (GetItemQuantityInStoreResponse) {
+    option (google.api.http) = {
+      get: "/v1/stock-quantities/stores/{store_id}/items/{item_id}"
+    };
+  }
+
+  rpc ReduceStockInStore (ReduceStockInStoreRequest) returns (ReduceStockInStoreResponse) {
+    option (google.api.http) = {
+      post: "/v1/stock-quantities/reduce"
+      body: "*"
+    };
+  }
+
+  rpc UpdateBinLocation (UpdateBinLocationRequest) returns (UpdateBinLocationResponse) {
+    option (google.api.http) = {
+      put: "/v1/stock-quantities/bin-location"
+      body: "*"
+    };
+  }
+}
+
+// Request and Response messages for Stock Items
+message CreateStockItemRequest {
+  StockItem item = 1;
+  string store_id = 2;
+  double initial_quantity = 3;
+  string bin_location = 4;
+}
+
+message CreateStockItemResponse {
+  string id = 1;
+}
+
+message GetStockItemRequest {
+  string id = 1;
+  string store_id = 2;
+}
+
+message GetStockItemResponse {
+  StockItem item = 1;
+}
+
+message UpdateStockItemRequest {
+  string id = 1;
+  StockItem item = 2;
+}
+
+message UpdateStockItemResponse {
+  bool success = 1;
+}
+
+message DeleteStockItemRequest {
+  string id = 1;
+}
+
+message DeleteStockItemResponse {
+  bool success = 1;
+}
+
+message ListStockItemsRequest {
+  string filter = 1;
+  string category = 2;
+  string store_id = 3;
+}
+
+message ListStockItemsResponse {
+  repeated StockItem items = 1;
+}
+
+message GetStockLevelsRequest {
+  string store_id = 1;
+}
+
+message GetStockLevelsResponse {
+  repeated StockItem items = 1;
+}
+
+message GetExpiringItemsRequest {
+  string store_id = 1;
+  string days_ahead = 2; // e.g., "30" for items expiring in next 30 days
+}
+
+message GetExpiringItemsResponse {
+  repeated GoodsReceivedItem items = 1;
+}
+
+message GetItemsBelowReorderLevelRequest {
+  string store_id = 1;
+}
+
+message GetItemsBelowReorderLevelResponse {
+  repeated StockItem items = 1;
+}
+
+// Request and Response messages for Stores
+message CreateStoreRequest {
+  Store store = 1;
+}
+
+message CreateStoreResponse {
+  string id = 1;
+}
+
+message ListStoresRequest {}
+
+message ListStoresResponse {
+  repeated Store stores = 1;
+}
+
+message GetStoreRequest {
+  string id = 1;
+}
+
+message GetStoreResponse {
+  Store store = 1;
+}
+
+message UpdateStoreRequest {
+  string id = 1;
+  Store store = 2;
+}
+
+message UpdateStoreResponse {
+  Store store = 1;
+}
+
+message DeleteStoreRequest {
+  string id = 1;
+}
+
+message DeleteStoreResponse {
+  string message = 1;
+}
+
+// Request and Response messages for Suppliers
+message CreateSupplierRequest {
+  Supplier supplier = 1;
+}
+
+message CreateSupplierResponse {
+  string id = 1;
+}
+
+message ListSuppliersRequest {}
+
+message ListSuppliersResponse {
+  repeated Supplier suppliers = 1;
+}
+
+message GetSupplierRequest {
+  string id = 1;
+}
+
+message GetSupplierResponse {
+  Supplier supplier = 1;
+}
+
+message UpdateSupplierRequest {
+  string id = 1;
+  Supplier supplier = 2;
+}
+
+message UpdateSupplierResponse {
+  Supplier supplier = 1;
+}
+
+message DeleteSupplierRequest {
+  string id = 1;
+}
+
+message DeleteSupplierResponse {
+  string message = 1;
+}
+
+// Request and Response messages for Requisitions
+message CreateRequisitionRequest {
+  Requisition requisition = 1;
+}
+
+message CreateRequisitionResponse {
+  string id = 1;
+  string requisition_id = 2;
+}
+
+message ApproveRequisitionRequest {
+  string id = 1;
+  string approver_id = 2;
+  string approver_name = 3;
+  string approver_signature = 4;
+  repeated RequisitionItem approved_items = 5;
+}
+
+message ApproveRequisitionResponse {
+  bool success = 1;
+}
+
+message RejectRequisitionRequest {
+  string id = 1;
+  string rejecter_id = 2;
+  string rejecter_name = 3;
+  string rejecter_signature = 4;
+  string rejection_reason = 5;
+}
+
+message RejectRequisitionResponse {
+  bool success = 1;
+}
+
+message GetRequisitionRequest {
+  string id = 1;
+}
+
+message GetRequisitionResponse {
+  Requisition requisition = 1;
+}
+
+message ListRequisitionsRequest {
+  string status = 1; // optional filter by status
+  string store_id = 2; // optional filter by store
+}
+
+message ListRequisitionsResponse {
+  repeated Requisition requisitions = 1;
+}
+
+// Request and Response messages for LPOs
+message CreateLPORequest {
+  LocalPurchaseOrder lpo = 1;
+}
+
+message CreateLPOResponse {
+  string id = 1;
+}
+
+message ApproveLPORequest {
+  string id = 1;
+  string authorizer_id = 2;
+  string authorizer_name = 3;
+  string authorizer_signature = 4;
+}
+
+message ApproveLPOResponse {
+  bool success = 1;
+}
+
+message RejectLPORequest {
+  string id = 1;
+  string rejecter_id = 2;
+  string rejecter_name = 3;
+  string rejecter_signature = 4;
+  string rejection_reason = 5;
+}
+
+message RejectLPOResponse {
+  bool success = 1;
+}
+
+message GetLPORequest {
+  string id = 1;
+}
+
+message GetLPOResponse {
+  LocalPurchaseOrder lpo = 1;
+}
+
+message ListLPOsRequest {
+  string status = 1; // optional filter by status
+  string store_id = 2; // optional filter by store
+  string supplier_id = 3; // optional filter by supplier
+}
+
+message ListLPOsResponse {
+  repeated LocalPurchaseOrder lpos = 1;
+}
+
+// Request and Response messages for GRNs
+message CreateGRNRequest {
+  GoodsReceivedNote grn = 1;
+}
+
+message CreateGRNResponse {
+  string id = 1;
+}
+
+message PerformQualityCheckRequest {
+  string id = 1;
+  string checker_id = 2;
+  string checker_name = 3;
+  repeated GoodsReceivedItem items = 4;
+}
+
+message PerformQualityCheckResponse {
+  bool success = 1;
+}
+
+message GetGRNRequest {
+  string id = 1;
+}
+
+message GetGRNResponse {
+  GoodsReceivedNote grn = 1;
+}
+
+message ListGRNsRequest {
+  string status = 1; // optional filter by status
+  string store_id = 2; // optional filter by store
+  string supplier_id = 3; // optional filter by supplier
+  string lpo_number = 4; // optional filter by LPO number
+}
+
+message ListGRNsResponse {
+  repeated GoodsReceivedNote grns = 1;
+}
+
+// Request and Response messages for Stock Adjustments
+message CreateStockAdjustmentRequest {
+  StockAdjustment adjustment = 1;
+}
+
+message CreateStockAdjustmentResponse {
+  string id = 1;
+}
+
+message ApproveStockAdjustmentRequest {
+  string id = 1;
+  string authorizer_id = 2;
+  string authorizer_name = 3;
+  string authorizer_signature = 4;
+}
+
+message ApproveStockAdjustmentResponse {
+  bool success = 1;
+}
+
+message RejectStockAdjustmentRequest {
+  string id = 1;
+  string rejecter_id = 2;
+  string rejecter_name = 3;
+  string rejecter_signature = 4;
+  string rejection_reason = 5;
+}
+
+message RejectStockAdjustmentResponse {
+  bool success = 1;
+}
+
+message GetStockAdjustmentRequest {
+  string id = 1;
+}
+
+message GetStockAdjustmentResponse {
+  StockAdjustment adjustment = 1;
+}
+
+message ListStockAdjustmentsRequest {
+  string status = 1; // optional filter by status
+  string store_id = 2; // optional filter by store
+  string reason = 3; // optional filter by reason (e.g., "expired", "damaged")
+  string start_date = 4; // optional filter by start date
+  string end_date = 5; // optional filter by end date
+}
+
+message ListStockAdjustmentsResponse {
+  repeated StockAdjustment adjustments = 1;
+}
+
+// Request and Response messages for Inter-Store Transfers
+message CreateInterStoreTransferRequest {
+  InterStoreTransfer transfer = 1;
+}
+
+message CreateInterStoreTransferResponse {
+  string id = 1;
+}
+
+message ApproveInterStoreTransferRequest {
+  string id = 1;
+  string approver_id = 2;
+  string approver_name = 3;
+  string approver_signature = 4;
+}
+
+message ApproveInterStoreTransferResponse {
+  bool success = 1;
+}
+
+message RejectInterStoreTransferRequest {
+  string id = 1;
+  string rejecter_id = 2;
+  string rejecter_name = 3;
+  string rejecter_signature = 4;
+  string rejection_reason = 5;
+}
+
+message RejectInterStoreTransferResponse {
+  bool success = 1;
+}
+
+message ReceiveInterStoreTransferRequest {
+  string id = 1;
+  string receiver_id = 2;
+  string receiver_name = 3;
+  string receiver_signature = 4;
+  repeated InterStoreTransferItem received_items = 5;
+}
+
+message ReceiveInterStoreTransferResponse {
+  bool success = 1;
+}
+
+message GetInterStoreTransferRequest {
+  string id = 1;
+}
+
+message GetInterStoreTransferResponse {
+  InterStoreTransfer transfer = 1;
+}
+
+message ListInterStoreTransfersRequest {
+  string status = 1;
+  string source_store_id = 2;
+  string destination_store_id = 3;
+}
+
+message ListInterStoreTransfersResponse {
+  repeated InterStoreTransfer transfers = 1;
+}
+
+// Request and Response messages for Credit Notes
+message CreateCreditNoteRequest {
+  CreditNote credit_note = 1;
+}
+
+message CreateCreditNoteResponse {
+  string id = 1;
+}
+
+message ApproveCreditNoteRequest {
+  string id = 1;
+  string approver_id = 2;
+  string approver_name = 3;
+  string approver_signature = 4;
+}
+
+message ApproveCreditNoteResponse {
+  bool success = 1;
+}
+
+message GetCreditNoteRequest {
+  string id = 1;
+}
+
+message GetCreditNoteResponse {
+  CreditNote credit_note = 1;
+}
+
+message ListCreditNotesRequest {
+  string status = 1;
+  string supplier_id = 2;
+}
+
+message ListCreditNotesResponse {
+  repeated CreditNote credit_notes = 1;
+}
+
+// Price List Management
+message CreatePriceListRequest {
+  string name = 1;
+  string description = 2;
+  bool is_active = 3;
+}
+
+message CreatePriceListResponse {
+  int32 id = 1;
+  string message = 2;
+}
+
+message GetPriceListRequest {
+  int32 id = 1;
+}
+
+message GetPriceListResponse {
+  PriceList price_list = 1;
+}
+
+message UpdatePriceListRequest {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  bool is_active = 4;
+}
+
+message UpdatePriceListResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListPriceListsRequest {
+  bool active_only = 1;
+}
+
+message ListPriceListsResponse {
+  repeated PriceList price_lists = 1;
+}
+
+// Price List Item Management
+message CreatePriceListItemRequest {
+  int32 price_list_id = 1;
+  int32 stock_item_id = 2;
+  double selling_price = 3;
+  google.protobuf.Timestamp valid_from = 4;
+  google.protobuf.Timestamp valid_to = 5;
+}
+
+message CreatePriceListItemResponse {
+  int32 id = 1;
+  string message = 2;
+}
+
+message GetPriceListItemRequest {
+  int32 id = 1;
+}
+
+message GetPriceListItemResponse {
+  PriceListItem price_list_item = 1;
+}
+
+message UpdatePriceListItemRequest {
+  int32 id = 1;
+  int32 price_list_id = 2;
+  int32 stock_item_id = 3;
+  double selling_price = 4;
+  google.protobuf.Timestamp valid_from = 5;
+  google.protobuf.Timestamp valid_to = 6;
+}
+
+message UpdatePriceListItemResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeletePriceListItemRequest {
+  int32 id = 1;
+}
+
+message DeletePriceListItemResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListPriceListItemsRequest {
+  int32 price_list_id = 1;
+  int32 stock_item_id = 2;
+}
+
+message ListPriceListItemsResponse {
+  repeated PriceListItem price_list_items = 1;
+}
+
+message GetPriceListItemsByPriceListRequest {
+  int32 price_list_id = 1;
+}
+
+message GetPriceListItemsByPriceListResponse {
+  repeated PriceListItem price_list_items = 1;
+}
+
+// Medical Scheme Management
+message CreateMedicalSchemeRequest {
+  string name = 1;
+  int32 customer_id = 2;
+  bool is_active = 3;
+  double coverage_percentage = 4;
+  bool covers_consultation = 5;
+  bool covers_medication = 6;
+  bool covers_laboratory = 7;
+  double annual_limit = 8;
+  double consultation_limit = 9;
+  double copay_percentage = 11;
+  double copay_fixed_amount = 12;
+}
+
+message CreateMedicalSchemeResponse {
+  int32 id = 1;
+  string message = 2;
+}
+
+message GetMedicalSchemeRequest {
+  int32 id = 1;
+}
+
+message GetMedicalSchemeByNameRequest {
+  string name = 1;
+}
+
+message GetMedicalSchemeResponse {
+  MedicalScheme medical_scheme = 1;
+}
+
+message UpdateMedicalSchemeRequest {
+  int32 id = 1;
+  string name = 2;
+  int32 customer_id = 3;
+  bool is_active = 4;
+  double coverage_percentage = 5;
+  bool covers_consultation = 6;
+  bool covers_medication = 7;
+  bool covers_laboratory = 8;
+  double annual_limit = 9;
+  double consultation_limit = 10;
+  double copay_percentage = 11;
+  double copay_fixed_amount = 12;
+}
+
+message UpdateMedicalSchemeResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListMedicalSchemesRequest {
+  bool active_only = 1;
+}
+
+message ListMedicalSchemesResponse {
+  repeated MedicalScheme medical_schemes = 1;
+}
+
+// Stock Quantities Messages - NEW ENDPOINTS FOR PHARMACY SERVICE
+message StockQuantity {
+  string store_id = 1;
+  string item_id = 2;
+  string item_name = 3;
+  double quantity = 4;
+  string category = 5;
+  string unit_of_measure = 6;
+  string bin_location = 7;
+}
+
+message GetStoreStockQuantitiesRequest {
+  string store_id = 1;
+}
+
+message GetStoreStockQuantitiesResponse {
+  repeated StockQuantity quantities = 1;
+}
+
+message GetItemQuantityInStoreRequest {
+  string store_id = 1;
+  string item_id = 2;
+}
+
+message GetItemQuantityInStoreResponse {
+  double quantity = 1;
+  bool item_exists = 2;
+}
+
+message ReduceStockInStoreRequest {
+  string store_id = 1;
+  string item_id = 2;
+  double quantity = 3;
+}
+
+message ReduceStockInStoreResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message UpdateBinLocationRequest {
+  string store_id = 1;
+  string item_id = 2;
+  string bin_location = 3;
+}
+
+message UpdateBinLocationResponse {
+  bool success = 1;
+  string message = 2;
+}

@@ -1,0 +1,42 @@
+// homasy-backend/pkg/proto/encounter_service.proto
+
+syntax = "proto3";
+
+package encounter;
+
+import "google/api/annotations.proto";
+
+option go_package = "./shared/encounter-service/proto";
+
+enum EncounterStatus {
+    ENCOUNTER_STATUS_UNSPECIFIED = 0;
+    // The encounter can proceed. A fee was already paid or has been successfully billed to a scheme.
+    PROCEED = 1;
+    // The encounter is blocked pending payment by the patient.
+    PAYMENT_REQUIRED = 2;
+    // An internal error occurred during the check.
+    ERROR = 3;
+}
+
+message StartEncounterRequest {
+    string patient_id = 1;
+    string doctor_id = 2; // The ID of the doctor initiating the encounter
+}
+
+message StartEncounterResponse {
+    EncounterStatus status = 1;
+    string message = 2; // e.g., "Patient must pay consultation fee." or "Encounter started."
+    string encounter_id = 3; // A unique ID for the new encounter session if successful.
+}
+
+service EncounterService {
+  // Starts a new clinical encounter.
+  // This RPC acts as a "billing gate", checking for a recent consultation fee
+  // or creating a new one before allowing access to the patient's EMR.
+  rpc StartEncounter (StartEncounterRequest) returns (StartEncounterResponse) {
+    option (google.api.http) = {
+      post: "/v1/encounters/start"
+      body: "*"
+    };
+  }
+}

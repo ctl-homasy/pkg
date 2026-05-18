@@ -1,0 +1,603 @@
+syntax = "proto3";
+
+package analytics;
+
+import "google/api/annotations.proto";
+
+option go_package = "./shared/analytics-service/proto";
+
+// AnalyticsService defines the service for generating reports and analytics
+service AnalyticsService {
+  // Dashboard Metrics
+  rpc GetDashboardMetrics (GetDashboardMetricsRequest) returns (GetDashboardMetricsResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/dashboard"
+    };
+  }
+
+  // Financial Reports
+  rpc GetRevenueReport (GetRevenueReportRequest) returns (GetRevenueReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/revenue"
+    };
+  }
+
+  rpc GetPaymentMethodsReport (GetPaymentMethodsReportRequest) returns (GetPaymentMethodsReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/payment-methods"
+    };
+  }
+
+  rpc GetOutstandingInvoicesReport (GetOutstandingInvoicesReportRequest) returns (GetOutstandingInvoicesReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/outstanding-invoices"
+    };
+  }
+
+  rpc GetMedicalSchemeReport (GetMedicalSchemeReportRequest) returns (GetMedicalSchemeReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/medical-schemes"
+    };
+  }
+
+  rpc GetDepartmentRevenueReport (GetDepartmentRevenueReportRequest) returns (GetDepartmentRevenueReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/department-revenue"
+    };
+  }
+
+  // Pharmacy Reports
+  rpc GetPOSSalesReport (GetPOSSalesReportRequest) returns (GetPOSSalesReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/pos-sales"
+    };
+  }
+
+  rpc GetTopSellingMedicationsReport (GetTopSellingMedicationsReportRequest) returns (GetTopSellingMedicationsReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/top-medications"
+    };
+  }
+
+  rpc GetLowStockReport (GetLowStockReportRequest) returns (GetLowStockReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/low-stock"
+    };
+  }
+
+  rpc GetStockMovementReport (GetStockMovementReportRequest) returns (GetStockMovementReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/stock-movements"
+    };
+  }
+
+  rpc GetExpiringMedicationsReport (GetExpiringMedicationsReportRequest) returns (GetExpiringMedicationsReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/expiring-medications"
+    };
+  }
+
+  rpc GetMedicationSalesTrendsReport (GetMedicationSalesTrendsReportRequest) returns (GetMedicationSalesTrendsReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/medication-trends"
+    };
+  }
+
+  // Patient Reports
+  rpc GetPatientRegistrationReport (GetPatientRegistrationReportRequest) returns (GetPatientRegistrationReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/patient-registration"
+    };
+  }
+
+  rpc GetActivePatientReport (GetActivePatientReportRequest) returns (GetActivePatientReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/active-patients"
+    };
+  }
+
+  rpc GetPatientBillingReport (GetPatientBillingReportRequest) returns (GetPatientBillingReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/patient-billing"
+    };
+  }
+
+  // HR Reports
+  rpc GetPayrollReport (GetPayrollReportRequest) returns (GetPayrollReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/hr/payroll"
+    };
+  }
+
+  rpc GetAttendanceReport (GetAttendanceReportRequest) returns (GetAttendanceReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/hr/attendance"
+    };
+  }
+
+  rpc GetLeaveReport (GetLeaveReportRequest) returns (GetLeaveReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/hr/leave"
+    };
+  }
+
+  // Operational Reports
+  rpc GetCashierPerformanceReport (GetCashierPerformanceReportRequest) returns (GetCashierPerformanceReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/cashier-performance"
+    };
+  }
+
+  rpc GetSalesByTimeReport (GetSalesByTimeReportRequest) returns (GetSalesByTimeReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/analytics/reports/sales-by-time"
+    };
+  }
+}
+
+// ========== Dashboard Messages ==========
+
+message GetDashboardMetricsRequest {
+  string date = 1; // Format: YYYY-MM-DD, defaults to today
+}
+
+message DashboardMetrics {
+  // Today's metrics
+  double today_revenue = 1;
+  int32 today_sales_count = 2;
+  int32 today_patients = 3;
+
+  // Current status
+  int32 low_stock_items = 4;
+  int32 outstanding_invoices_count = 5;
+  double outstanding_invoices_amount = 6;
+
+  // Month comparison
+  double current_month_revenue = 7;
+  double last_month_revenue = 8;
+  double revenue_growth_percentage = 9;
+
+  // This week
+  double this_week_revenue = 10;
+  int32 this_week_sales = 11;
+
+  // Quick stats
+  int32 active_patients = 12;
+  int32 total_medications = 13;
+  int32 expiring_soon_count = 14; // Medications expiring in 30 days
+}
+
+message GetDashboardMetricsResponse {
+  DashboardMetrics metrics = 1;
+}
+
+// ========== Financial Report Messages ==========
+
+message GetRevenueReportRequest {
+  string start_date = 1; // Format: YYYY-MM-DD
+  string end_date = 2;
+  string group_by = 3; // "day", "week", "month", "year"
+  string department = 4; // Optional filter by department
+}
+
+message RevenueDataPoint {
+  string period = 1; // Date or period label
+  double revenue = 2;
+  int32 transaction_count = 3;
+  double average_transaction = 4;
+}
+
+message GetRevenueReportResponse {
+  repeated RevenueDataPoint data = 1;
+  double total_revenue = 2;
+  int32 total_transactions = 3;
+  double average_transaction = 4;
+  double growth_percentage = 5; // Compared to previous period
+}
+
+message GetPaymentMethodsReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+}
+
+message PaymentMethodData {
+  string payment_method = 1; // "cash", "bank", "mobile", "scheme"
+  double amount = 2;
+  int32 transaction_count = 3;
+  double percentage = 4; // Percentage of total
+}
+
+message GetPaymentMethodsReportResponse {
+  repeated PaymentMethodData data = 1;
+  double total_amount = 2;
+  int32 total_transactions = 3;
+}
+
+message GetOutstandingInvoicesReportRequest {
+  int32 overdue_only = 1; // 1 for overdue only, 0 for all outstanding
+  string medical_scheme_id = 2; // Optional filter
+}
+
+message OutstandingInvoiceData {
+  string invoice_id = 1;
+  string patient_id = 2;
+  string patient_name = 3;
+  double amount = 4;
+  double outstanding_amount = 5;
+  string due_date = 6;
+  int32 days_overdue = 7;
+  string medical_scheme_name = 8;
+}
+
+message GetOutstandingInvoicesReportResponse {
+  repeated OutstandingInvoiceData invoices = 1;
+  double total_outstanding = 2;
+  int32 total_count = 3;
+  double total_overdue = 4;
+  int32 overdue_count = 5;
+}
+
+message GetMedicalSchemeReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+}
+
+message MedicalSchemeData {
+  int32 scheme_id = 1;
+  string scheme_name = 2;
+  double total_billed = 3;
+  double total_paid = 4;
+  double outstanding = 5;
+  int32 patient_count = 6;
+  int32 claim_count = 7;
+}
+
+message GetMedicalSchemeReportResponse {
+  repeated MedicalSchemeData schemes = 1;
+  double total_billed = 2;
+  double total_outstanding = 3;
+}
+
+message GetDepartmentRevenueReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+}
+
+message DepartmentRevenueData {
+  string department = 1;
+  double revenue = 2;
+  int32 service_count = 3;
+  double average_service_cost = 4;
+  double percentage = 5; // Percentage of total revenue
+}
+
+message GetDepartmentRevenueReportResponse {
+  repeated DepartmentRevenueData departments = 1;
+  double total_revenue = 2;
+}
+
+// ========== Pharmacy Report Messages ==========
+
+message GetPOSSalesReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+  int32 cashier_id = 3; // Optional filter
+  int32 store_id = 4; // Optional filter
+  string group_by = 5; // "day", "week", "month"
+}
+
+message POSSalesDataPoint {
+  string period = 1;
+  double sales_amount = 2;
+  int32 transaction_count = 3;
+  int32 items_sold = 4;
+  double average_transaction = 5;
+}
+
+message GetPOSSalesReportResponse {
+  repeated POSSalesDataPoint data = 1;
+  double total_sales = 2;
+  int32 total_transactions = 3;
+  int32 total_items_sold = 4;
+  double average_transaction = 5;
+}
+
+message GetTopSellingMedicationsReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+  int32 limit = 3; // Top N medications, default 10
+  string category = 4; // Optional filter by category
+}
+
+message TopMedicationData {
+  int32 medication_id = 1;
+  string medication_name = 2;
+  string category = 3;
+  int32 quantity_sold = 4;
+  double total_revenue = 5;
+  int32 transaction_count = 6;
+  double average_price = 7;
+}
+
+message GetTopSellingMedicationsReportResponse {
+  repeated TopMedicationData medications = 1;
+  int32 total_unique_medications = 2;
+}
+
+message GetLowStockReportRequest {
+  int32 threshold_percentage = 1; // Default 20 (below 20% of reorder level)
+  int32 store_id = 2; // Optional filter
+  string category = 3; // Optional filter
+}
+
+message LowStockItem {
+  int32 medication_id = 1;
+  string medication_name = 2;
+  string category = 3;
+  int32 current_stock = 4;
+  int32 reorder_level = 5;
+  int32 max_stock_level = 6;
+  int32 quantity_needed = 7; // To reach max level
+  string supplier_name = 8;
+  double unit_cost = 9;
+  string last_restocked_date = 10;
+}
+
+message GetLowStockReportResponse {
+  repeated LowStockItem items = 1;
+  int32 total_items = 2;
+  double estimated_restock_cost = 3;
+}
+
+message GetStockMovementReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+  int32 medication_id = 3; // Optional filter
+  string movement_type = 4; // Optional: "POS_SALE", "RESTOCK", "ADJUSTMENT", "EXPIRED"
+}
+
+message StockMovementData {
+  int32 movement_id = 1;
+  string movement_date = 2;
+  int32 medication_id = 3;
+  string medication_name = 4;
+  string movement_type = 5;
+  int32 quantity = 6; // Negative for outgoing, positive for incoming
+  string reference = 7; // POS sale ID, purchase order ID, etc.
+  string notes = 8;
+  int32 balance_after = 9;
+}
+
+message GetStockMovementReportResponse {
+  repeated StockMovementData movements = 1;
+  int32 total_movements = 2;
+}
+
+message GetExpiringMedicationsReportRequest {
+  int32 days_threshold = 1; // Default 30 days
+  int32 store_id = 2; // Optional filter
+}
+
+message ExpiringMedicationData {
+  int32 batch_id = 1;
+  int32 medication_id = 2;
+  string medication_name = 3;
+  string batch_number = 4;
+  int32 quantity = 5;
+  string expiry_date = 6;
+  int32 days_until_expiry = 7;
+  double unit_cost = 8;
+  double potential_loss = 9; // quantity * unit_cost
+  string category = 10;
+}
+
+message GetExpiringMedicationsReportResponse {
+  repeated ExpiringMedicationData medications = 1;
+  int32 total_items = 2;
+  double total_potential_loss = 3;
+}
+
+message GetMedicationSalesTrendsReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+  int32 medication_id = 3; // Optional: specific medication
+  string category = 4; // Optional: category trend
+  string group_by = 5; // "day", "week", "month"
+}
+
+message MedicationTrendData {
+  string period = 1;
+  string medication_name = 2;
+  int32 quantity_sold = 3;
+  double revenue = 4;
+  double average_price = 5;
+}
+
+message GetMedicationSalesTrendsReportResponse {
+  repeated MedicationTrendData trends = 1;
+  double total_revenue = 2;
+  int32 total_quantity = 3;
+}
+
+// ========== Patient Report Messages ==========
+
+message GetPatientRegistrationReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+  string group_by = 3; // "day", "week", "month"
+}
+
+message PatientRegistrationData {
+  string period = 1;
+  int32 new_patients = 2;
+  int32 cumulative_patients = 3;
+}
+
+message GetPatientRegistrationReportResponse {
+  repeated PatientRegistrationData data = 1;
+  int32 total_new_patients = 2;
+  int32 total_patients = 3;
+}
+
+message GetActivePatientReportRequest {
+  int32 days_threshold = 1; // Default 90 days (active = visited in last 90 days)
+}
+
+message ActivePatientData {
+  string patient_id = 1;
+  string patient_name = 2;
+  string phone = 3;
+  string last_visit_date = 4;
+  int32 visit_count = 5;
+  double total_spent = 6;
+  string medical_scheme_name = 7;
+}
+
+message GetActivePatientReportResponse {
+  repeated ActivePatientData patients = 1;
+  int32 total_active_patients = 2;
+  int32 total_patients = 3;
+  double activity_rate = 4; // Percentage
+}
+
+message GetPatientBillingReportRequest {
+  string patient_id = 1; // Optional: specific patient
+  string start_date = 2;
+  string end_date = 3;
+}
+
+message PatientBillingData {
+  string patient_id = 1;
+  string patient_name = 2;
+  double total_billed = 3;
+  double total_paid = 4;
+  double outstanding = 5;
+  int32 invoice_count = 6;
+  int32 visit_count = 7;
+  double average_visit_cost = 8;
+}
+
+message GetPatientBillingReportResponse {
+  repeated PatientBillingData patients = 1;
+  double total_billed = 2;
+  double total_outstanding = 3;
+}
+
+// ========== Operational Report Messages ==========
+
+message GetCashierPerformanceReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+  int32 cashier_id = 3; // Optional: specific cashier
+}
+
+message CashierPerformanceData {
+  int32 cashier_id = 1;
+  string cashier_name = 2;
+  int32 transaction_count = 3;
+  double total_sales = 4;
+  double average_transaction = 5;
+  int32 items_sold = 6;
+  int32 shifts_worked = 7;
+  double sales_per_shift = 8;
+}
+
+message GetCashierPerformanceReportResponse {
+  repeated CashierPerformanceData cashiers = 1;
+  double total_sales = 2;
+  int32 total_transactions = 3;
+}
+
+message GetSalesByTimeReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+  string group_by = 3; // "hour", "day_of_week"
+}
+
+message SalesByTimeData {
+  string time_period = 1; // Hour (00-23) or Day (Monday-Sunday)
+  int32 transaction_count = 2;
+  double total_sales = 3;
+  double average_transaction = 4;
+  int32 items_sold = 5;
+}
+
+message GetSalesByTimeReportResponse {
+  repeated SalesByTimeData data = 1;
+  string peak_time = 2; // Most busy period
+  double peak_sales = 3;
+}
+
+// ========== HR Report Messages ==========
+
+message GetPayrollReportRequest {
+  string start_date = 1; // Format: YYYY-MM-DD
+  string end_date = 2;
+  string group_by = 3; // "month", "week"
+}
+
+message PayrollPeriodData {
+  string period = 1;
+  int32 employee_count = 2;
+  double total_gross = 3;
+  double total_net = 4;
+  double total_allowances = 5;
+  double total_deductions = 6;
+  double total_tax = 7;
+  double total_pension = 8;
+}
+
+message GetPayrollReportResponse {
+  repeated PayrollPeriodData data = 1;
+  double total_gross = 2;
+  double total_net = 3;
+  double total_allowances = 4;
+  double total_deductions = 5;
+  int32 total_records = 6;
+}
+
+message GetAttendanceReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+  string group_by = 3; // "day", "week", "month"
+}
+
+message AttendancePeriodData {
+  string period = 1;
+  int32 present = 2;
+  int32 absent = 3;
+  int32 late = 4;
+  int32 total = 5;
+  double attendance_rate = 6; // percentage
+}
+
+message GetAttendanceReportResponse {
+  repeated AttendancePeriodData data = 1;
+  int32 total_present = 2;
+  int32 total_absent = 3;
+  int32 total_late = 4;
+  int32 total_records = 5;
+  double overall_attendance_rate = 6;
+}
+
+message GetLeaveReportRequest {
+  string start_date = 1;
+  string end_date = 2;
+}
+
+message LeaveTypeData {
+  string leave_type = 1;
+  int32 count = 2;
+  int32 total_days = 3;
+  int32 approved = 4;
+  int32 pending = 5;
+  int32 rejected = 6;
+}
+
+message GetLeaveReportResponse {
+  repeated LeaveTypeData by_type = 1;
+  int32 total_requests = 2;
+  int32 total_days_taken = 3;
+  int32 total_approved = 4;
+  int32 total_pending = 5;
+}

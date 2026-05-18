@@ -1,0 +1,1315 @@
+// billing.proto
+syntax = "proto3";
+
+package billing_service;
+
+import "google/api/annotations.proto";
+
+option go_package = "./shared/billing-service/proto";
+
+// BillingService defines the service for managing invoices and payments
+service BillingService {
+  // Creates an invoice
+  rpc CreateInvoice (CreateInvoiceRequest) returns (CreateInvoiceResponse) {
+    option (google.api.http) = {
+      post: "/v1/invoices"
+      body: "*"
+    };
+  }
+
+  // Retrieves an invoice by ID
+  rpc GetInvoice (GetInvoiceRequest) returns (GetInvoiceResponse) {
+    option (google.api.http) = {
+      get: "/v1/invoices/{invoice_id}"
+    };
+  }
+
+  // Updates an invoice
+  rpc UpdateInvoice (UpdateInvoiceRequest) returns (UpdateInvoiceResponse) {
+    option (google.api.http) = {
+      put: "/v1/invoices/{invoice_id}"
+      body: "*"
+    };
+  }
+
+  // Deletes an invoice
+  rpc DeleteInvoice (DeleteInvoiceRequest) returns (DeleteInvoiceResponse) {
+    option (google.api.http) = {
+      delete: "/v1/invoices/{invoice_id}"
+    };
+  }
+
+  // Lists all invoices (with optional filters)
+  rpc ListInvoices (ListInvoicesRequest) returns (ListInvoicesResponse) {
+    option (google.api.http) = {
+      get: "/v1/invoices"
+    };
+  }
+
+  // Get invoices by patient ID
+  rpc GetInvoicesByPatientId (GetInvoicesByPatientIdRequest) returns (ListInvoicesResponse) {
+    option (google.api.http) = {
+      get: "/v1/invoices/patient/{patient_id}"
+    };
+  }
+
+  // Process payment for an invoice
+  rpc ProcessPayment (ProcessPaymentRequest) returns (ProcessPaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/invoices/{invoice_id}/payments"
+      body: "*"
+    };
+  }
+
+  // List payments for an invoice
+  rpc ListInvoicePayments (ListInvoicePaymentsRequest) returns (ListInvoicePaymentsResponse) {
+    option (google.api.http) = {
+      get: "/v1/invoices/{invoice_id}/payments"
+    };
+  }
+
+  // Mark invoice as paid
+  rpc MarkInvoiceAsPaid (MarkInvoiceAsPaidRequest) returns (MarkInvoiceAsPaidResponse) {
+    option (google.api.http) = {
+      put: "/v1/invoices/{invoice_id}/mark-paid"
+      body: "*"
+    };
+  }
+
+  // Send invoice by email
+  rpc SendInvoiceEmail (SendInvoiceEmailRequest) returns (SendInvoiceEmailResponse) {
+    option (google.api.http) = {
+      post: "/v1/invoices/{invoice_id}/send-email"
+      body: "*"
+    };
+  }
+
+ // New Updates
+
+    // Service Record Management
+    rpc CreateServiceRecord (CreateServiceRecordRequest) returns (CreateServiceRecordResponse) {
+        option (google.api.http) = {
+            post: "/v1/service-records"
+            body: "*"
+        };
+    }
+
+    rpc UpdateServiceRecordStatus (UpdateServiceRecordStatusRequest) returns (UpdateServiceRecordStatusResponse) {
+        option (google.api.http) = {
+            put: "/v1/service-records/{record_id}/status"
+            body: "*"
+        };
+    }
+
+    rpc DeleteServiceRecord (DeleteServiceRecordRequest) returns (DeleteServiceRecordResponse) {
+        option (google.api.http) = {
+            delete: "/v1/service-records/{record_id}"
+        };
+    }
+
+    rpc CancelServiceRecord (CancelServiceRecordRequest) returns (CancelServiceRecordResponse) {
+        option (google.api.http) = {
+            post: "/v1/service-records/{record_id}/cancel"
+            body: "*"
+        };
+    }
+
+    rpc UpdateServiceRecordPrice (UpdateServiceRecordPriceRequest) returns (UpdateServiceRecordPriceResponse) {
+        option (google.api.http) = {
+            patch: "/v1/service-records/{record_id}/price"
+            body: "*"
+        };
+    }
+
+    rpc GetServiceRecordsByPatient (GetServiceRecordsByPatientRequest) returns (GetServiceRecordsByPatientResponse) {
+        option (google.api.http) = {
+            get: "/v1/service-records/patient/{patient_id}"
+        };
+    }
+
+  rpc GenerateInvoiceFromRecords (GenerateInvoiceFromRecordsRequest) returns (CreateInvoiceResponse) {
+      option (google.api.http) = {
+          post: "/v1/service-records/generate-invoice"
+          body: "*"
+      };
+  }
+
+  rpc ListServiceRecords (ListServiceRecordsRequest) returns (ListServiceRecordsResponse) {
+    option (google.api.http) = {
+        get: "/v1/service-records"
+    };
+  }
+
+  // Calculate bill split based on medical scheme
+  rpc CalculateBillSplit (CalculateBillSplitRequest) returns (CalculateBillSplitResponse) {
+    option (google.api.http) = {
+        post: "/v1/invoices/calculate-split"
+        body: "*"
+    };
+  }
+
+  // Send invoice to patient or medical scheme
+  rpc SendInvoice (SendInvoiceRequest) returns (SendInvoiceResponse) {
+    option (google.api.http) = {
+        post: "/v1/invoices/{invoice_id}/send"
+        body: "*"
+    };
+  }
+
+  // Get patient payment status (for consultation restrictions)
+  rpc GetPatientPaymentStatus (GetPatientPaymentStatusRequest) returns (GetPatientPaymentStatusResponse) {
+    option (google.api.http) = {
+        get: "/v1/patients/{patient_id}/payment-status"
+    };
+  }
+
+  // Get pending bills for patient
+  rpc GetPendingBills (GetPendingBillsRequest) returns (GetPendingBillsResponse) {
+    option (google.api.http) = {
+        get: "/v1/patients/{patient_id}/pending-bills"
+    };
+  }
+}
+
+// Payment method structure
+message PaymentMethod {
+  string type = 1;
+  string card_number = 2;
+  string expiry_date = 3;
+  string cvv = 4;
+  string scheme_provider = 5;
+  string scheme_id = 6;
+  int32 percentage = 7;
+}
+
+// Invoice item structure
+message InvoiceItem {
+  string description = 1;
+  string service_record_id = 5;
+  int32 quantity = 2;
+  double unit_price = 3;
+  double total = 4;
+}
+
+// Create Invoice request
+message CreateInvoiceRequest {
+  string patient_id = 1;
+  string invoice_date = 2;
+  string due_date = 3;
+  repeated PaymentMethod payment_methods = 4;
+  string notes = 5;
+  double discount = 6;
+  double tax_rate = 7;
+  repeated InvoiceItem items = 8;
+  string patient_name = 9;
+}
+
+// Create Invoice response
+message CreateInvoiceResponse {
+  string invoice_id = 1;
+  string status = 2;
+}
+
+// Get Invoice request
+message GetInvoiceRequest {
+  string invoice_id = 1;
+}
+
+// Invoice data structure
+message Invoice {
+  string invoice_id = 1;
+  string patient_id = 2;
+  string patient_name = 3;
+  string invoice_date = 4;
+  string due_date = 5;
+  string status = 6;
+  double total = 7;
+  double discount = 8;
+  double tax_rate = 9;
+  repeated PaymentMethod payment_methods = 10;
+  repeated InvoiceItem items = 11;
+  string notes = 12;
+  string created_at = 13;
+  double paid_amount = 14;
+}
+
+// Get Invoice response
+message GetInvoiceResponse {
+  Invoice invoice = 1;
+}
+
+// Update Invoice request
+message UpdateInvoiceRequest {
+  string invoice_id = 1;
+  string patient_id = 2;
+  string invoice_date = 3;
+  string due_date = 4;
+  string status = 5;
+  double discount = 6;
+  double tax_rate = 7;
+  repeated PaymentMethod payment_methods = 8;
+  repeated InvoiceItem items = 9;
+  string notes = 10;
+}
+
+// Update Invoice response
+message UpdateInvoiceResponse {
+  bool success = 1;
+}
+
+// Delete Invoice request
+message DeleteInvoiceRequest {
+  string invoice_id = 1;
+}
+
+// Delete Invoice response
+message DeleteInvoiceResponse {
+  bool success = 1;
+}
+
+// List Invoices request
+message ListInvoicesRequest {
+  string status_filter = 1;
+  string patient_filter = 2;
+  string date_from = 3;
+  string date_to = 4;
+  string search_query = 5;
+}
+
+// List Invoices response
+message ListInvoicesResponse {
+  repeated Invoice invoices = 1;
+}
+
+// Get Invoices by Patient ID request
+message GetInvoicesByPatientIdRequest {
+  string patient_id = 1;
+}
+
+// Process Payment request
+message ProcessPaymentRequest {
+  string invoice_id = 1;
+  string payment_method = 2;
+  double amount = 3;
+  string transaction_reference = 4;
+  string payment_date = 5;
+}
+
+// Process Payment response
+message ProcessPaymentResponse {
+  bool success = 1;
+  string payment_id = 2;
+  string status = 3;
+}
+
+// List Invoice Payments
+message ListInvoicePaymentsRequest {
+  string invoice_id = 1;
+}
+
+message InvoicePayment {
+  string id = 1;
+  string invoice_id = 2;
+  string payment_method = 3;
+  double amount = 4;
+  string transaction_reference = 5;
+  string payment_date = 6;
+  string payment_scope = 7;
+  bool is_consultation_fee = 8;
+  string created_at = 9;
+}
+
+message ListInvoicePaymentsResponse {
+  repeated InvoicePayment payments = 1;
+}
+
+// Mark Invoice as Paid request
+message MarkInvoiceAsPaidRequest {
+  string invoice_id = 1;
+}
+
+// Mark Invoice as Paid response
+message MarkInvoiceAsPaidResponse {
+  bool success = 1;
+}
+
+// Send Invoice Email request
+message SendInvoiceEmailRequest {
+  string invoice_id = 1;
+  string email_address = 2;
+  string subject = 3;
+  string message = 4;
+}
+
+// Send Invoice Email response
+message SendInvoiceEmailResponse {
+  bool success = 1;
+  string status = 2;
+}
+
+
+
+
+
+// services/billing-service/proto/service_record.proto
+
+message ServiceRecord {
+    string record_id = 1;
+    string patient_id = 2;
+    string service_type = 3;  // e.g., "appointment", "medication", "lab_test"
+    string service_id = 4;    // ID from the original service
+    string description = 5;
+    double amount = 6;
+    string status = 7;       // "pending", "completed", "billed", "paid"
+    string created_at = 8;
+    string updated_at = 9;
+    string department = 10;   // Department where service was provided
+    string provider_id = 11;  // Doctor/Pharmacist/Lab Tech ID
+    string provider_name = 12;
+    int32 medical_scheme_id = 13;  // Patient's medical scheme
+    bool scheme_covered = 14;      // Whether scheme covers this service
+    double scheme_amount = 15;     // Amount covered by scheme
+    double patient_amount = 16;    // Amount patient must pay
+}
+
+message CreateServiceRecordRequest {
+    string patient_id = 1;
+    string service_type = 2;
+    string service_id = 3;
+    string description = 4;
+    double amount = 5;
+    string department = 6;
+    string provider_id = 7;
+    string provider_name = 8;
+    int32 medical_scheme_id = 9;
+}
+
+message CreateServiceRecordResponse {
+    string record_id = 1;
+    bool success = 2;
+}
+
+message UpdateServiceRecordStatusRequest {
+    string record_id = 1;
+    string status = 2;
+}
+
+message UpdateServiceRecordStatusResponse {
+    bool success = 1;
+}
+
+message DeleteServiceRecordRequest {
+    string record_id = 1;
+    string reason = 2;  // Optional reason for deletion
+}
+
+message DeleteServiceRecordResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message CancelServiceRecordRequest {
+    string record_id = 1;
+    string reason = 2;  // Reason for cancellation
+    bool refund = 3;    // Whether to refund the amount
+}
+
+message CancelServiceRecordResponse {
+    bool success = 1;
+    string message = 2;
+    double refund_amount = 3;  // Amount refunded if applicable
+}
+
+message UpdateServiceRecordPriceRequest {
+    string record_id = 1;
+    double new_amount = 2;      // New service amount
+    string reason = 3;          // Reason for price change (e.g., "discount", "correction")
+    double previous_amount = 4; // Previous amount for audit trail
+}
+
+message UpdateServiceRecordPriceResponse {
+    bool success = 1;
+    string message = 2;
+    double old_amount = 3;
+    double new_amount = 4;
+    double difference = 5;      // Difference between new and old (negative for discount)
+}
+
+message GetServiceRecordsByPatientRequest {
+    string patient_id = 1;
+    string status_filter = 2;
+}
+
+message GetServiceRecordsByPatientResponse {
+    repeated ServiceRecord records = 1;
+}
+
+message GenerateInvoiceFromRecordsRequest {
+    repeated string record_ids = 1;
+    string patient_id = 2;
+    string invoice_date = 3;
+    string due_date = 4;
+    repeated PaymentMethod payment_methods = 5;
+    string notes = 6;
+    double discount = 7;
+    double tax_rate = 8;
+}
+
+message ListServiceRecordsRequest {
+    string status_filter = 1;
+}
+
+message ListServiceRecordsResponse {
+    repeated ServiceRecord records = 1;
+}
+
+// Bill Splitting Messages
+message CalculateBillSplitRequest {
+    string patient_id = 1;
+    int32 medical_scheme_id = 2;
+    repeated BillItem items = 3;
+    double subtotal = 4;
+}
+
+message BillItem {
+    string service_type = 1;  // "consultation", "medication", "laboratory"
+    string description = 2;
+    double amount = 3;
+}
+
+message BillSplit {
+    double scheme_amount = 1;         // Amount covered by scheme
+    double patient_amount = 2;        // Amount patient must pay
+    double copay_amount = 3;          // Fixed copayment amount
+    double scheme_percentage = 4;     // Percentage covered by scheme
+    double patient_percentage = 5;    // Percentage patient must pay
+    string coverage_details = 6;      // Human-readable coverage breakdown
+}
+
+message BillItemSplit {
+    string service_type = 1;
+    string description = 2;
+    double total_amount = 3;
+    double scheme_covers = 4;
+    double patient_pays = 5;
+    bool covered_by_scheme = 6;
+    string reason = 7;  // Reason if not covered
+}
+
+message CalculateBillSplitResponse {
+    BillSplit overall_split = 1;
+    repeated BillItemSplit item_splits = 2;
+    double total_amount = 3;
+    double scheme_total = 4;
+    double patient_total = 5;
+    string message = 6;
+}
+
+// Invoice Sending Messages
+message SendInvoiceRequest {
+    string invoice_id = 1;
+    string recipient_type = 2;  // "patient", "scheme", "both"
+    string email_address = 3;   // Optional: override default email
+    bool include_payment_link = 4;
+    string message = 5;         // Optional custom message
+}
+
+message SendInvoiceResponse {
+    bool success = 1;
+    string message = 2;
+    string tracking_id = 3;     // Email tracking ID
+    string sent_to = 4;         // Email address(es) sent to
+}
+
+// Patient Payment Status Messages
+message GetPatientPaymentStatusRequest {
+    string patient_id = 1;
+}
+
+message PaymentStatus {
+    bool has_pending_bills = 1;
+    double pending_amount = 2;
+    int32 pending_bill_count = 3;
+    bool has_overdue_bills = 4;
+    double overdue_amount = 5;
+    int32 overdue_bill_count = 6;
+    bool payment_plan_active = 7;
+    string payment_status = 8;  // "good_standing", "pending", "overdue", "blocked"
+    bool can_access_services = 9;
+    string restriction_reason = 10;
+    bool has_valid_consultation_payment = 11;  // True if consultation fee paid today
+    string consultation_payment_valid_until = 12;  // Date until consultation payment is valid
+}
+
+message GetPatientPaymentStatusResponse {
+    PaymentStatus status = 1;
+    string message = 2;
+}
+
+// Pending Bills Messages
+message GetPendingBillsRequest {
+    string patient_id = 1;
+    bool include_overdue = 2;
+}
+
+message PendingBill {
+    string invoice_id = 1;
+    string invoice_date = 2;
+    string due_date = 3;
+    double amount = 4;
+    double amount_paid = 5;
+    double balance = 6;
+    string status = 7;
+    int32 days_overdue = 8;
+    repeated ServiceRecord services = 9;
+}
+
+message GetPendingBillsResponse {
+    repeated PendingBill bills = 1;
+    double total_pending = 2;
+    double total_overdue = 3;
+    string message = 4;
+}
+
+// ============================================================================
+// PRICE MANAGEMENT SERVICE
+// ============================================================================
+
+service PriceService {
+  // Price Lookup RPCs (for other services)
+  rpc LookupServicePrice(LookupServicePriceRequest) returns (LookupServicePriceResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/lookup/service"
+      body: "*"
+    };
+  }
+
+  rpc LookupLabTestPrice(LookupLabTestPriceRequest) returns (LookupLabTestPriceResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/lookup/lab-test"
+      body: "*"
+    };
+  }
+
+  rpc LookupWardPrice(LookupWardPriceRequest) returns (LookupWardPriceResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/lookup/ward"
+      body: "*"
+    };
+  }
+
+  // Service Price Management
+  rpc GetServicePrice(GetServicePriceRequest) returns (GetServicePriceResponse) {
+    option (google.api.http) = {
+      get: "/v1/prices/service-prices/{id}"
+    };
+  }
+
+  rpc ListServicePrices(ListServicePricesRequest) returns (ListServicePricesResponse) {
+    option (google.api.http) = {
+      get: "/v1/prices/service-prices"
+    };
+  }
+
+  rpc CreateServicePrice(CreateServicePriceRequest) returns (CreateServicePriceResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/service-prices"
+      body: "*"
+    };
+  }
+
+  rpc UpdateServicePrice(UpdateServicePriceRequest) returns (UpdateServicePriceResponse) {
+    option (google.api.http) = {
+      put: "/v1/prices/service-prices/{id}"
+      body: "*"
+    };
+  }
+
+  // Lab Test Price Management
+  rpc GetLabTestPrice(GetLabTestPriceRequest) returns (GetLabTestPriceResponse) {
+    option (google.api.http) = {
+      get: "/v1/prices/lab-test-prices/{id}"
+    };
+  }
+
+  rpc ListLabTestPrices(ListLabTestPricesRequest) returns (ListLabTestPricesResponse) {
+    option (google.api.http) = {
+      get: "/v1/prices/lab-test-prices"
+    };
+  }
+
+  rpc CreateLabTestPrice(CreateLabTestPriceRequest) returns (CreateLabTestPriceResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/lab-test-prices"
+      body: "*"
+    };
+  }
+
+  rpc UpdateLabTestPrice(UpdateLabTestPriceRequest) returns (UpdateLabTestPriceResponse) {
+    option (google.api.http) = {
+      put: "/v1/prices/lab-test-prices/{id}"
+      body: "*"
+    };
+  }
+
+  // Ward Type Price Management
+  rpc GetWardTypePrice(GetWardTypePriceRequest) returns (GetWardTypePriceResponse) {
+    option (google.api.http) = {
+      get: "/v1/prices/ward-type-prices/{id}"
+    };
+  }
+
+  rpc ListWardTypePrices(ListWardTypePricesRequest) returns (ListWardTypePricesResponse) {
+    option (google.api.http) = {
+      get: "/v1/prices/ward-type-prices"
+    };
+  }
+
+  rpc CreateWardTypePrice(CreateWardTypePriceRequest) returns (CreateWardTypePriceResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/ward-type-prices"
+      body: "*"
+    };
+  }
+
+  rpc UpdateWardTypePrice(UpdateWardTypePriceRequest) returns (UpdateWardTypePriceResponse) {
+    option (google.api.http) = {
+      put: "/v1/prices/ward-type-prices/{id}"
+      body: "*"
+    };
+  }
+
+  // Delete Price Management
+  rpc DeleteServicePrice(DeleteServicePriceRequest) returns (DeleteServicePriceResponse) {
+    option (google.api.http) = {
+      delete: "/v1/prices/service-prices/{id}"
+    };
+  }
+
+  rpc DeleteLabTestPrice(DeleteLabTestPriceRequest) returns (DeleteLabTestPriceResponse) {
+    option (google.api.http) = {
+      delete: "/v1/prices/lab-test-prices/{id}"
+    };
+  }
+
+  rpc DeleteWardTypePrice(DeleteWardTypePriceRequest) returns (DeleteWardTypePriceResponse) {
+    option (google.api.http) = {
+      delete: "/v1/prices/ward-type-prices/{id}"
+    };
+  }
+
+  // CSV Import/Export
+  rpc ExportServicePricesToCSV(ExportPricesRequest) returns (stream ExportCSVResponse) {
+    option (google.api.http) = {
+      get: "/v1/prices/export/service-prices"
+    };
+  }
+
+  rpc ExportLabTestPricesToCSV(ExportPricesRequest) returns (stream ExportCSVResponse) {
+    option (google.api.http) = {
+      get: "/v1/prices/export/lab-test-prices"
+    };
+  }
+
+  rpc ExportWardTypePricesToCSV(ExportPricesRequest) returns (stream ExportCSVResponse) {
+    option (google.api.http) = {
+      get: "/v1/prices/export/ward-type-prices"
+    };
+  }
+
+  rpc ImportServicePricesFromCSV(ImportPricesRequest) returns (ImportCSVResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/import/service-prices"
+      body: "*"
+    };
+  }
+
+  rpc ImportLabTestPricesFromCSV(ImportPricesRequest) returns (ImportCSVResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/import/lab-test-prices"
+      body: "*"
+    };
+  }
+
+  rpc ImportWardTypePricesFromCSV(ImportPricesRequest) returns (ImportCSVResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/import/ward-type-prices"
+      body: "*"
+    };
+  }
+
+  rpc ValidateServicePricesCSV(ValidateCSVRequest) returns (ValidateCSVResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/validate/service-prices"
+      body: "*"
+    };
+  }
+
+  rpc ValidateLabTestPricesCSV(ValidateCSVRequest) returns (ValidateCSVResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/validate/lab-test-prices"
+      body: "*"
+    };
+  }
+
+  rpc ValidateWardTypePricesCSV(ValidateCSVRequest) returns (ValidateCSVResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/validate/ward-type-prices"
+      body: "*"
+    };
+  }
+
+  // Price Change Approval Workflow
+  rpc CreatePriceChangeRequest(CreatePriceChangeRequestRequest) returns (CreatePriceChangeRequestResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/change-requests"
+      body: "*"
+    };
+  }
+
+  rpc GetPriceChangeRequest(GetPriceChangeRequestRequest) returns (GetPriceChangeRequestResponse) {
+    option (google.api.http) = {
+      get: "/v1/prices/change-requests/{request_id}"
+    };
+  }
+
+  rpc ListPriceChangeRequests(ListPriceChangeRequestsRequest) returns (ListPriceChangeRequestsResponse) {
+    option (google.api.http) = {
+      get: "/v1/prices/change-requests"
+    };
+  }
+
+  rpc ApprovePriceChangeRequest(ApprovePriceChangeRequestRequest) returns (ApprovePriceChangeRequestResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/change-requests/{request_id}/approve"
+      body: "*"
+    };
+  }
+
+  rpc RejectPriceChangeRequest(RejectPriceChangeRequestRequest) returns (RejectPriceChangeRequestResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/change-requests/{request_id}/reject"
+      body: "*"
+    };
+  }
+
+  rpc CancelPriceChangeRequest(CancelPriceChangeRequestRequest) returns (CancelPriceChangeRequestResponse) {
+    option (google.api.http) = {
+      post: "/v1/prices/change-requests/{request_id}/cancel"
+      body: "*"
+    };
+  }
+}
+
+// Price Lookup Messages
+message LookupServicePriceRequest {
+  string service_type = 1;
+  string service_name = 2;
+  int64 medical_scheme_id = 3;
+  string date = 4;
+  double default_amount = 5;
+}
+
+message LookupServicePriceResponse {
+  bool found = 1;
+  double base_amount = 2;
+  int64 medical_scheme_id = 3;
+  string service_type = 4;
+  string service_name = 5;
+  string message = 6;
+}
+
+message LookupLabTestPriceRequest {
+  string test_name = 1;
+  string test_panel = 2;
+  int64 medical_scheme_id = 3;
+  string date = 4;
+  double default_amount = 5;
+}
+
+message LookupLabTestPriceResponse {
+  bool found = 1;
+  double base_amount = 2;
+  string test_name = 3;
+  string test_panel = 4;
+  string message = 5;
+}
+
+message LookupWardPriceRequest {
+  string ward_type = 1;
+  int64 medical_scheme_id = 2;
+  string date = 3;
+  double default_admission_charge = 4;
+  double default_daily_charge = 5;
+}
+
+message LookupWardPriceResponse {
+  bool found = 1;
+  double admission_charge = 2;
+  double daily_charge = 3;
+  string ward_type = 4;
+  string message = 5;
+}
+
+// Service Price Messages
+message ServicePrice {
+  int64 id = 1;
+  string service_type = 2;
+  string service_name = 3;
+  string description = 4;
+  double base_amount = 5;
+  int64 medical_scheme_id = 6;
+  bool is_active = 7;
+  string effective_from = 8;
+  string effective_until = 9;
+  string created_at = 10;
+  string updated_at = 11;
+}
+
+message GetServicePriceRequest {
+  int64 id = 1;
+}
+
+message GetServicePriceResponse {
+  ServicePrice price = 1;
+}
+
+message ListServicePricesRequest {
+  string service_type = 1;
+  bool active_only = 2;
+}
+
+message ListServicePricesResponse {
+  repeated ServicePrice prices = 1;
+}
+
+message CreateServicePriceRequest {
+  string service_type = 1;
+  string service_name = 2;
+  string description = 3;
+  double base_amount = 4;
+  int64 medical_scheme_id = 5;
+  bool is_active = 6;
+  string effective_from = 7;
+  string effective_until = 8;
+}
+
+message CreateServicePriceResponse {
+  int64 id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message UpdateServicePriceRequest {
+  int64 id = 1;
+  string service_type = 2;
+  string service_name = 3;
+  string description = 4;
+  double base_amount = 5;
+  int64 medical_scheme_id = 6;
+  bool is_active = 7;
+  string effective_from = 8;
+  string effective_until = 9;
+}
+
+message UpdateServicePriceResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Lab Test Price Messages
+message LabTestPrice {
+  int64 id = 1;
+  string test_name = 2;
+  string test_panel = 3;
+  string test_code = 4;
+  double base_amount = 5;
+  int64 medical_scheme_id = 6;
+  bool is_active = 7;
+  string effective_from = 8;
+  string effective_until = 9;
+  string created_at = 10;
+  string updated_at = 11;
+}
+
+message GetLabTestPriceRequest {
+  int64 id = 1;
+}
+
+message GetLabTestPriceResponse {
+  LabTestPrice price = 1;
+}
+
+message ListLabTestPricesRequest {
+  string test_panel = 1;
+  bool active_only = 2;
+}
+
+message ListLabTestPricesResponse {
+  repeated LabTestPrice prices = 1;
+}
+
+message CreateLabTestPriceRequest {
+  string test_name = 1;
+  string test_panel = 2;
+  string test_code = 3;
+  double base_amount = 4;
+  int64 medical_scheme_id = 5;
+  bool is_active = 6;
+  string effective_from = 7;
+  string effective_until = 8;
+}
+
+message CreateLabTestPriceResponse {
+  int64 id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message UpdateLabTestPriceRequest {
+  int64 id = 1;
+  string test_name = 2;
+  string test_panel = 3;
+  string test_code = 4;
+  double base_amount = 5;
+  int64 medical_scheme_id = 6;
+  bool is_active = 7;
+  string effective_from = 8;
+  string effective_until = 9;
+}
+
+message UpdateLabTestPriceResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Ward Type Price Messages
+message WardTypePrice {
+  int64 id = 1;
+  string ward_type = 2;
+  double admission_charge = 3;
+  double daily_charge = 4;
+  int64 medical_scheme_id = 5;
+  bool is_active = 6;
+  string effective_from = 7;
+  string effective_until = 8;
+  string created_at = 9;
+  string updated_at = 10;
+}
+
+message GetWardTypePriceRequest {
+  int64 id = 1;
+}
+
+message GetWardTypePriceResponse {
+  WardTypePrice price = 1;
+}
+
+message ListWardTypePricesRequest {
+  bool active_only = 1;
+}
+
+message ListWardTypePricesResponse {
+  repeated WardTypePrice prices = 1;
+}
+
+message CreateWardTypePriceRequest {
+  string ward_type = 1;
+  double admission_charge = 2;
+  double daily_charge = 3;
+  int64 medical_scheme_id = 4;
+  bool is_active = 5;
+  string effective_from = 6;
+  string effective_until = 7;
+}
+
+message CreateWardTypePriceResponse {
+  int64 id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message UpdateWardTypePriceRequest {
+  int64 id = 1;
+  string ward_type = 2;
+  double admission_charge = 3;
+  double daily_charge = 4;
+  int64 medical_scheme_id = 5;
+  bool is_active = 6;
+  string effective_from = 7;
+  string effective_until = 8;
+}
+
+message UpdateWardTypePriceResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Delete Price Messages
+message DeleteServicePriceRequest {
+  int64 id = 1;
+}
+
+message DeleteServicePriceResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteLabTestPriceRequest {
+  int64 id = 1;
+}
+
+message DeleteLabTestPriceResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteWardTypePriceRequest {
+  int64 id = 1;
+}
+
+message DeleteWardTypePriceResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// CSV Import/Export Messages
+message ExportPricesRequest {
+  bool active_only = 1;
+}
+
+message ExportCSVResponse {
+  bytes csv_data = 1;
+}
+
+message ImportPricesRequest {
+  bytes csv_data = 1;
+  string user_id = 2;
+  string user_name = 3;
+  bool require_approval = 4;
+}
+
+message CSVImportError {
+  int32 row = 1;
+  string column = 2;
+  string error = 3;
+}
+
+message ImportCSVResponse {
+  int32 total_rows = 1;
+  int32 success_count = 2;
+  int32 fail_count = 3;
+  repeated CSVImportError errors = 4;
+  string message = 5;
+}
+
+message ValidateCSVRequest {
+  bytes csv_data = 1;
+}
+
+message ValidateCSVResponse {
+  bool valid = 1;
+  int32 total_rows = 2;
+  int32 error_count = 3;
+  repeated CSVImportError errors = 4;
+  repeated string warnings = 5;
+}
+
+// Price Change Request Messages
+message PriceChangeRequest {
+  int64 id = 1;
+  string request_id = 2;
+  string price_table = 3;
+  int64 price_record_id = 4;
+  string action_type = 5;
+  string requested_data = 6;
+  string current_data = 7;
+  string requested_by_user_id = 8;
+  string requested_by_user_name = 9;
+  string requested_at = 10;
+  string reason = 11;
+  string status = 12;
+  string approved_by_user_id = 13;
+  string approved_by_user_name = 14;
+  string approved_at = 15;
+  string rejection_reason = 16;
+  bool applied = 17;
+  string applied_at = 18;
+  string created_at = 19;
+  string updated_at = 20;
+}
+
+message CreatePriceChangeRequestRequest {
+  string price_table = 1;
+  int64 price_record_id = 2;
+  string action_type = 3;
+  string requested_data = 4;
+  string current_data = 5;
+  string requested_by_user_id = 6;
+  string requested_by_user_name = 7;
+  string reason = 8;
+}
+
+message CreatePriceChangeRequestResponse {
+  string request_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetPriceChangeRequestRequest {
+  string request_id = 1;
+}
+
+message GetPriceChangeRequestResponse {
+  PriceChangeRequest request = 1;
+}
+
+message ListPriceChangeRequestsRequest {
+  string status = 1;
+  string user_id = 2;
+}
+
+message ListPriceChangeRequestsResponse {
+  repeated PriceChangeRequest requests = 1;
+}
+
+message ApprovePriceChangeRequestRequest {
+  string request_id = 1;
+  string approver_user_id = 2;
+  string approver_user_name = 3;
+}
+
+message ApprovePriceChangeRequestResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message RejectPriceChangeRequestRequest {
+  string request_id = 1;
+  string approver_user_id = 2;
+  string approver_user_name = 3;
+  string reason = 4;
+}
+
+message RejectPriceChangeRequestResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message CancelPriceChangeRequestRequest {
+  string request_id = 1;
+}
+
+message CancelPriceChangeRequestResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// ============================================================================
+// CUSTOMER SERVICE
+// ============================================================================
+
+// CustomerType defines the billing category of a customer
+enum CustomerType {
+  CASH = 0;
+  COMPANY = 1;
+  MASM = 2;
+  COMPANY_WITH_CASH_RATE = 3;
+}
+
+// Customer represents a billing customer (insurer, company, or cash patient group)
+message Customer {
+  int32 id = 1;
+  string name = 2;
+  CustomerType type = 3;
+  int32 price_list_id = 4;
+  string phone = 5;
+  string email = 6;
+  string address = 7;
+  string contact_person = 8;
+  bool is_active = 9;
+  string notes = 10;
+  string created_at = 11;
+  string updated_at = 12;
+}
+
+service CustomerService {
+  rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerResponse) {
+    option (google.api.http) = { post: "/v1/customers" body: "*" };
+  }
+  rpc GetCustomer (GetCustomerRequest) returns (GetCustomerResponse) {
+    option (google.api.http) = { get: "/v1/customers/{id}" };
+  }
+  rpc UpdateCustomer (UpdateCustomerRequest) returns (UpdateCustomerResponse) {
+    option (google.api.http) = { put: "/v1/customers/{id}" body: "*" };
+  }
+  rpc DeleteCustomer (DeleteCustomerRequest) returns (DeleteCustomerResponse) {
+    option (google.api.http) = { delete: "/v1/customers/{id}" };
+  }
+  rpc ListCustomers (ListCustomersRequest) returns (ListCustomersResponse) {
+    option (google.api.http) = { get: "/v1/customers" };
+  }
+}
+
+message CreateCustomerRequest {
+  string name = 1;
+  CustomerType type = 2;
+  int32 price_list_id = 3;
+  string phone = 4;
+  string email = 5;
+  string address = 6;
+  string contact_person = 7;
+  bool is_active = 8;
+  string notes = 9;
+}
+
+message CreateCustomerResponse {
+  int32 id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetCustomerRequest {
+  int32 id = 1;
+}
+
+message GetCustomerResponse {
+  Customer customer = 1;
+}
+
+message UpdateCustomerRequest {
+  int32 id = 1;
+  string name = 2;
+  CustomerType type = 3;
+  int32 price_list_id = 4;
+  string phone = 5;
+  string email = 6;
+  string address = 7;
+  string contact_person = 8;
+  bool is_active = 9;
+  string notes = 10;
+}
+
+message UpdateCustomerResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteCustomerRequest {
+  int32 id = 1;
+}
+
+message DeleteCustomerResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListCustomersRequest {
+  bool active_only = 1;
+  CustomerType type_filter = 2;
+  string search = 3;
+}
+
+message ListCustomersResponse {
+  repeated Customer customers = 1;
+}

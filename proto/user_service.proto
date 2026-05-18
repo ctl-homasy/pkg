@@ -1,0 +1,445 @@
+// user_service.proto
+
+syntax = "proto3";
+
+package user_service;
+
+import "google/api/annotations.proto";
+
+option go_package = "./shared/user-service/proto";
+
+// User Management Service
+service UserService {
+  // Create a new user
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
+    option (google.api.http) = {
+      post: "/v1/user"
+      body: "*"
+    };
+  }
+
+  // Get a user by ID
+  rpc GetUser (GetUserRequest) returns (GetUserResponse) {
+    option (google.api.http) = {
+      get: "/v1/users/{id}"
+    };
+  }
+
+  // Update a user
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {
+    option (google.api.http) = {
+      put: "/v1/users/{id}"
+      body: "*"
+    };
+  }
+
+  // Delete a user by ID
+  rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse) {
+    option (google.api.http) = {
+      delete: "/v1/users/{id}"
+    };
+  }
+
+  // List all users
+  rpc ListUsers (ListUsersRequest) returns (ListUsersResponse) {
+    option (google.api.http) = {
+      get: "/v1/users"
+    };
+  }
+
+    // Update user password
+    rpc UpdatePassword (UpdatePasswordRequest) returns (UpdatePasswordResponse) {
+        option (google.api.http) = {
+            patch: "/v1/users/{id}/password"
+            body: "*"
+        };
+    }
+    
+    // Update user status (active/inactive)
+    rpc UpdateUserStatus (UpdateUserStatusRequest) returns (UpdateUserStatusResponse) {
+        option (google.api.http) = {
+            patch: "/v1/users/{id}/status"
+            body: "*"
+        };
+    }
+
+  // Authentication Methods
+  // Get user by email address
+  rpc GetUserByEmail (GetUserByEmailRequest) returns (GetUserResponse) {
+    option (google.api.http) = {
+      get: "/v1/users/email/{email}"
+    };
+  }
+
+  // Get password hash for a user (internal use for auth verification)
+  rpc GetPasswordHash (GetPasswordHashRequest) returns (GetPasswordHashResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/{id}/password-hash"
+      body: "*"
+    };
+  }
+
+  // Record user login attempt
+  rpc RecordLogin (RecordLoginRequest) returns (RecordLoginResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/{id}/login"
+      body: "*"
+    };
+  }
+
+  // Record user logout
+  rpc RecordLogout (RecordLogoutRequest) returns (RecordLogoutResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/{id}/logout"
+      body: "*"
+    };
+  }
+
+  // Hospital Management
+  rpc CreateHospital (CreateHospitalRequest) returns (CreateHospitalResponse) {
+    option (google.api.http) = {
+      post: "/v1/hospitals"
+      body: "*"
+    };
+  }
+
+  rpc GetHospital (GetHospitalRequest) returns (GetHospitalResponse) {
+    option (google.api.http) = {
+      get: "/v1/hospitals/{id}"
+    };
+  }
+
+  rpc UpdateHospital (UpdateHospitalRequest) returns (UpdateHospitalResponse) {
+    option (google.api.http) = {
+      put: "/v1/hospitals/{id}"
+      body: "*"
+    };
+  }
+
+  rpc ListHospitals (ListHospitalsRequest) returns (ListHospitalsResponse) {
+    option (google.api.http) = {
+      get: "/v1/hospitals"
+    };
+  }
+
+
+    // Payment Types Management
+  rpc CreatePaymentType (CreatePaymentTypeRequest) returns (CreatePaymentTypeResponse) {
+    option (google.api.http) = {
+      post: "/v1/payment-types"
+      body: "*"
+    };
+  }
+  
+  rpc UpdatePaymentType (UpdatePaymentTypeRequest) returns (UpdatePaymentTypeResponse) {
+    option (google.api.http) = {
+      put: "/v1/payment-types/{id}"
+      body: "*"
+    };
+  }
+  
+  rpc DeletePaymentType (DeletePaymentTypeRequest) returns (DeletePaymentTypeResponse) {
+    option (google.api.http) = {
+      delete: "/v1/payment-types/{id}"
+    };
+  }
+  
+  rpc ListPaymentTypes (ListPaymentTypesRequest) returns (ListPaymentTypesResponse) {
+    option (google.api.http) = {
+      get: "/v1/payment-types"
+    };
+  }
+
+  // Scheme Providers Management
+  rpc CreateSchemeProvider (CreateSchemeProviderRequest) returns (CreateSchemeProviderResponse) {
+    option (google.api.http) = {
+      post: "/v1/scheme-providers"
+      body: "*"
+    };
+  }
+  
+  rpc UpdateSchemeProvider (UpdateSchemeProviderRequest) returns (UpdateSchemeProviderResponse) {
+    option (google.api.http) = {
+      put: "/v1/scheme-providers/{id}"
+      body: "*"
+    };
+  }
+  
+  rpc DeleteSchemeProvider (DeleteSchemeProviderRequest) returns (DeleteSchemeProviderResponse) {
+    option (google.api.http) = {
+      delete: "/v1/scheme-providers/{id}"
+    };
+  }
+  
+  rpc ListSchemeProviders (ListSchemeProvidersRequest) returns (ListSchemeProvidersResponse) {
+    option (google.api.http) = {
+      get: "/v1/scheme-providers"
+    };
+  }
+}
+
+// Request and Response Messages
+
+// CreateUserRequest contains the data for creating a new user
+message CreateUserRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+  string role = 4;
+  string staff_id = 5;
+  bool is_active = 6;
+}
+
+// CreateUserResponse returns the ID of the newly created user
+message CreateUserResponse {
+  string id = 1;
+}
+
+// GetUserRequest contains the ID of the user to retrieve
+message GetUserRequest {
+  string id = 1;
+}
+
+// GetUserResponse contains the details of the requested user
+message GetUserResponse {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  string role = 4;
+  string staff_id = 5;
+  bool is_logged_in = 6;
+  bool is_active = 7;
+}
+
+// UpdateUserRequest contains the updated data for a user
+message UpdateUserRequest {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  string role = 4;
+  string staff_id = 5;
+  bool is_active = 6;
+}
+
+// UpdateUserResponse indicates whether the update was successful
+message UpdateUserResponse {
+  bool success = 1;
+}
+
+// DeleteUserRequest contains the ID of the user to delete
+message DeleteUserRequest {
+  string id = 1;
+}
+
+// DeleteUserResponse indicates whether the deletion was successful
+message DeleteUserResponse {
+  bool success = 1;
+}
+
+// ListUsersRequest is an empty request to list all users
+message ListUsersRequest {}
+
+// ListUsersResponse contains a list of all users
+message ListUsersResponse {
+  repeated GetUserResponse users = 1;
+}
+
+message UpdatePasswordRequest {
+    string id = 1;
+    string current_password = 2;
+    string new_password = 3;
+}
+
+message UpdatePasswordResponse {
+    bool success = 1;
+}
+
+message UpdateUserStatusRequest {
+    string id = 1;
+    bool is_active = 2;
+}
+
+message UpdateUserStatusResponse {
+    bool success = 1;
+}
+
+
+// Hospital Messages
+message CreateHospitalRequest {
+  string name = 1;
+  string email = 2;
+  string phone = 3;
+  string location = 4;
+  string description = 5;
+  string type = 6;
+  string ownership = 7;
+  string license_number = 8;
+  string established = 9;
+  string website = 10;
+  string emergency_contact = 11;
+  string hours = 12;
+}
+
+message CreateHospitalResponse {
+  string id = 1;
+}
+
+message GetHospitalRequest {
+  string id = 1;
+}
+
+message GetHospitalResponse {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string phone = 4;
+  string location = 5;
+  string description = 6;
+  string type = 7;
+  string ownership = 8;
+  string license_number = 9;
+  string established = 10;
+  string website = 11;
+  string emergency_contact = 12;
+  string hours = 13;
+}
+
+message UpdateHospitalRequest {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string phone = 4;
+  string location = 5;
+  string description = 6;
+  string type = 7;
+  string ownership = 8;
+  string license_number = 9;
+  string established = 10;
+  string website = 11;
+  string emergency_contact = 12;
+  string hours = 13;
+}
+
+message UpdateHospitalResponse {
+  bool success = 1;
+}
+
+message ListHospitalsRequest {}
+
+message ListHospitalsResponse {
+  repeated GetHospitalResponse hospitals = 1;
+}
+
+
+// Payment Type Messages
+message PaymentType {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  bool is_active = 4;
+}
+
+message CreatePaymentTypeRequest {
+  string name = 1;
+  string description = 2;
+}
+
+message CreatePaymentTypeResponse {
+  string id = 1;
+}
+
+message UpdatePaymentTypeRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  bool is_active = 4;
+}
+
+message UpdatePaymentTypeResponse {
+  bool success = 1;
+}
+
+message DeletePaymentTypeRequest {
+  string id = 1;
+}
+
+message DeletePaymentTypeResponse {
+  bool success = 1;
+}
+
+message ListPaymentTypesRequest {}
+
+message ListPaymentTypesResponse {
+  repeated PaymentType payment_types = 1;
+}
+
+// Scheme Provider Messages
+message SchemeProvider {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  bool is_active = 4;
+}
+
+message CreateSchemeProviderRequest {
+  string name = 1;
+  string description = 2;
+}
+
+message CreateSchemeProviderResponse {
+  string id = 1;
+}
+
+message UpdateSchemeProviderRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  bool is_active = 4;
+}
+
+message UpdateSchemeProviderResponse {
+  bool success = 1;
+}
+
+message DeleteSchemeProviderRequest {
+  string id = 1;
+}
+
+message DeleteSchemeProviderResponse {
+  bool success = 1;
+}
+
+message ListSchemeProvidersRequest {}
+
+message ListSchemeProvidersResponse {
+  repeated SchemeProvider scheme_providers = 1;
+}
+
+// Authentication Message Types
+message GetUserByEmailRequest {
+  string email = 1;
+}
+
+message GetPasswordHashRequest {
+  string id = 1;
+}
+
+message GetPasswordHashResponse {
+  string password_hash = 1;
+}
+
+message RecordLoginRequest {
+  string id = 1;
+}
+
+message RecordLoginResponse {
+  bool success = 1;
+}
+
+message RecordLogoutRequest {
+  string id = 1;
+}
+
+message RecordLogoutResponse {
+  bool success = 1;
+}

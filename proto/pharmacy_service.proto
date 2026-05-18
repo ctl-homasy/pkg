@@ -1,0 +1,1273 @@
+// pharmacy_service.proto
+
+syntax = "proto3";
+
+package pharmacy_service;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./shared/pharmacy-service/proto";
+
+service PharmacyService {
+
+  // Medication Endpoints
+  rpc CreateMedication (CreateMedicationRequest) returns (CreateMedicationResponse) {
+    option (google.api.http) = {
+      post: "/v1/medications"
+      body: "*"
+    };
+  }
+
+  rpc GetMedication (GetMedicationRequest) returns (GetMedicationResponse) {
+    option (google.api.http) = {
+      get: "/v1/medications/{medication_id}"
+    };
+  }
+
+  rpc UpdateMedication (UpdateMedicationRequest) returns (UpdateMedicationResponse) {
+    option (google.api.http) = {
+      put: "/v1/medications/{medication_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteMedication (DeleteMedicationRequest) returns (DeleteMedicationResponse) {
+    option (google.api.http) = {
+      delete: "/v1/medications/{medication_id}"
+    };
+  }
+
+  rpc ListMedications (ListMedicationsRequest) returns (ListMedicationsResponse) {
+    option (google.api.http) = {
+      get: "/v1/medications"
+    };
+  }
+
+  rpc ListMedicationsWithStock (ListMedicationsWithStockRequest) returns (ListMedicationsWithStockResponse) {
+    option (google.api.http) = {
+      get: "/v1/medications/with-stock"
+    };
+  }
+
+  rpc GetMedicationWithCategory (GetMedicationWithCategoryRequest) returns (GetMedicationWithCategoryResponse) {
+    option (google.api.http) = {
+      get: "/v1/medications/{medication_id}/category"
+    };
+  }
+
+  // Medication Category Endpoints
+  rpc CreateMedicationCategory (CreateMedicationCategoryRequest) returns (CreateMedicationCategoryResponse) {
+    option (google.api.http) = {
+      post: "/v1/categories"
+      body: "*"
+    };
+  }
+
+  rpc ListMedicationCategories (ListMedicationCategoriesRequest) returns (ListMedicationCategoriesResponse) {
+    option (google.api.http) = {
+      get: "/v1/categories"
+    };
+  }
+
+  rpc GetSingleCategory (GetSingleCategoryRequest) returns (GetSingleCategoryResponse) {
+    option (google.api.http) = {
+      get: "/v1/categories/{category_id}"
+    };
+  }
+  // prescriptions request Endpoints
+    
+    rpc CreatePrescriptionRequest(CreatePrescriptionRequestRequest) returns (CreatePrescriptionRequestResponse){
+      option (google.api.http) = {
+        post: "/v1/prescriptions_requests"
+        body: "*"
+      };
+    };
+
+    rpc UpdatePrescriptionRequest(UpdatePrescriptionRequestsRequests) returns (UpdatePrescriptionRequestsResponse){
+      option (google.api.http) = {
+        put: "/v1/prescriptions_requests/{prescription_id}"
+        body: "*"
+      };
+    };
+    rpc GetSinglePrescriptionRequest(GetSinglePrescriptionRequestRequest) returns (GetSinglePrescriptionRequestResponse){
+      option (google.api.http) = {
+       get: "/v1/prescriptions_requests/{prescription_id}"
+      };
+    };
+
+
+    rpc ListPrescriptionRequests(ListPrescriptionRequestsRequests) returns (ListPrescriptionRequestsResponse){
+      option (google.api.http) = {
+        get: "/v1/prescriptions_requests"
+      };
+    };
+
+
+    // prescription items Endpoints
+    rpc CreatePrescriptionItem(CreatePrescriptionItemRequest) returns (CreatePrescriptionItemResponse) {
+      option (google.api.http) = {
+        post: "/v1/prescription_items"
+        body: "*"
+      };
+    }
+  
+    rpc GetPrescriptionItem(GetPrescriptionItemRequest) returns (GetPrescriptionItemResponse) {
+      option (google.api.http) = {
+        get: "/v1/prescription_items/{item_id}"
+      };
+    }
+  
+    rpc ListPrescriptionItems(ListPrescriptionItemsRequest) returns (ListPrescriptionItemsResponse) {
+      option (google.api.http) = {
+        get: "/v1/prescription_items"
+      };
+    }
+    rpc UpdatePrescriptionItem(UpdatePrescriptionItemRequest) returns (UpdatePrescriptionItemResponse) {
+      option (google.api.http) = {
+        put: "/v1/prescription_items/{item_id}"
+        body: "*"
+      };
+    }
+  
+    rpc DeletePrescriptionItem(DeletePrescriptionItemRequest) returns (DeletePrescriptionItemResponse) {
+      option (google.api.http) = {
+        delete: "/v1/prescription_items/{item_id}"
+      };
+    }
+
+
+    // stock requests 
+    rpc CreateStockRequest (CreateStockRequestRequest) returns (CreateStockRequestResponse) {
+      option (google.api.http) = {
+        post: "/v1/stock_requests"
+        body: "*"
+      };
+    }
+  
+    rpc GetStockRequest (GetStockRequestRequest) returns (GetStockRequestResponse) {
+      option (google.api.http) = {
+        get: "/v1/stock_requests/{request_id}"
+      };
+    }
+  
+    rpc ListStockRequests (ListStockRequestsRequest) returns (ListStockRequestsResponse) {
+      option (google.api.http) = {
+        get: "/v1/stock_requests"
+      };
+    }
+  
+    rpc ApproveStockRequest (ApproveStockRequestRequest) returns (ApproveStockRequestResponse) {
+      option (google.api.http) = {
+        put: "/v1/stock_requests/{request_id}"
+        body: "*"
+      };
+    }
+  
+    rpc DeleteStockRequest (DeleteStockRequestRequest) returns (DeleteStockRequestResponse) {
+      option (google.api.http) = {
+        delete: "/v1/stock_requests/{request_id}"
+      };
+    }
+  //  request items Endpoints
+  rpc CreateStockRequestItem(CreateStockRequestItemRequest) returns (CreateStockRequestItemResponse) {
+    option (google.api.http) = {
+        post: "/v1/stock_request_items"
+        body: "*"
+    };
+}
+
+rpc GetStockRequestItem(GetStockRequestItemRequest) returns (GetStockRequestItemResponse) {
+    option (google.api.http) = {
+        get: "/v1/stock_request_items/{item_id}"
+    };
+}
+
+rpc ListStockRequestItems(ListStockRequestItemsRequest) returns (ListStockRequestItemsResponse) {
+    option (google.api.http) = {
+        get: "/v1/stock_request_items"
+    };
+}
+
+rpc UpdateStockRequestItem(UpdateStockRequestItemRequest) returns (UpdateStockRequestItemResponse) {
+    option (google.api.http) = {
+        put: "/v1/stock_request_items/{item_id}"
+        body: "*"
+    };
+  }
+  rpc DeleteStockRequestItem(DeleteStockRequestItemRequest) returns (DeleteStockRequestItemResponse) {
+    option (google.api.http) = {
+        delete: "/v1/stock_request_items/{item_id}"
+    };
+  }
+    // dispense service 
+  // Create a new dispensed medication record
+  rpc CreateDispensedMedication(CreateDispensedMedicationRequest) returns (CreateDispensedMedicationResponse) {
+    option (google.api.http) = {
+      post: "/v1/dispensed_medications"
+      body: "*"
+    };
+  }
+
+  // Get a specific dispensed medication record
+  rpc GetDispensedMedication(GetDispensedMedicationRequest) returns (GetDispensedMedicationResponse) {
+    option (google.api.http) = {
+      get: "/v1/dispensed_medications/{dispense_id}"
+    };
+  }
+
+  // List all dispensed medication records
+  rpc ListDispensedMedications(ListDispensedMedicationsRequest) returns (ListDispensedMedicationsResponse) {
+    option (google.api.http) = {
+      get: "/v1/dispensed_medications"
+    };
+  }
+
+  // Update a dispensed medication record
+  rpc UpdateDispensedMedication(UpdateDispensedMedicationRequest) returns (UpdateDispensedMedicationResponse) {
+    option (google.api.http) = {
+      put: "/v1/dispensed_medications/{dispense_id}"
+      body: "*"
+    };
+  }
+
+  // Delete a dispensed medication record
+  rpc DeleteDispensedMedication(DeleteDispensedMedicationRequest) returns (DeleteDispensedMedicationResponse) {
+    option (google.api.http) = {
+      delete: "/v1/dispensed_medications/{dispense_id}"
+    };
+  }
+
+  // medication returns  Endpoints
+  rpc CreateMedicationReturn(CreateMedicationReturnRequest) returns (CreateMedicationReturnResponse) {
+    option (google.api.http) = {
+      post: "/v1/medication_returns"
+      body: "*"
+    };
+  }
+
+  rpc GetMedicationReturn(GetMedicationReturnRequest) returns (GetMedicationReturnResponse) {
+    option (google.api.http) = {
+      get: "/v1/medication_returns/{return_id}"
+    };
+  }
+
+  rpc ListMedicationReturns(ListMedicationReturnsRequest) returns (ListMedicationReturnsResponse) {
+    option (google.api.http) = {
+      get: "/v1/medication_returns"
+    };
+  }
+
+  // stock movements Endpoints
+  rpc CreateStockMovement(CreateStockMovementRequest) returns (CreateStockMovementResponse) {
+    option (google.api.http) = {
+      post: "/v1/stock_movements"
+      body: "*"
+    };
+  }
+  
+  rpc GetStockMovement(GetStockMovementRequest) returns (GetStockMovementResponse) {
+    option (google.api.http) = {
+      get: "/v1/stock_movements/{movement_id}"
+    };
+  }
+  
+  rpc ListStockMovements(ListStockMovementsRequest) returns (ListStockMovementsResponse) {
+    option (google.api.http) = {
+      get: "/v1/stock_movements"
+    };
+  }
+  
+  rpc UpdateStockMovement(UpdateStockMovementRequest) returns (UpdateStockMovementResponse) {
+    option (google.api.http) = {
+      put: "/v1/stock_movements/{movement_id}"
+      body: "*"
+    };
+  }
+  
+  rpc DeleteStockMovement(DeleteStockMovementRequest) returns (DeleteStockMovementResponse) {
+    option (google.api.http) = {
+      delete: "/v1/stock_movements/{movement_id}"
+    };
+  }
+
+
+
+  // Medication Schedule endpoints
+  rpc CreateMedicationSchedule(CreateMedicationScheduleRequest) returns (CreateMedicationScheduleResponse) {
+    option (google.api.http) = {
+      post: "/v1/medication_schedules"
+      body: "*"
+    };
+  }
+
+  rpc GetMedicationSchedule(GetMedicationScheduleRequest) returns (GetMedicationScheduleResponse) {
+    option (google.api.http) = {
+      get: "/v1/medication_schedules/{schedule_id}"
+    };
+  }
+
+  rpc ListMedicationSchedules(ListMedicationSchedulesRequest) returns (ListMedicationSchedulesResponse) {
+    option (google.api.http) = {
+      get: "/v1/medication_schedules"
+    };
+  }
+
+  rpc UpdateMedicationSchedule(UpdateMedicationScheduleRequest) returns (UpdateMedicationScheduleResponse) {
+    option (google.api.http) = {
+      put: "/v1/medication_schedules/{schedule_id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteMedicationSchedule(DeleteMedicationScheduleRequest) returns (DeleteMedicationScheduleResponse) {
+    option (google.api.http) = {
+      delete: "/v1/medication_schedules/{schedule_id}"
+    };
+  }
+
+  // Medication Intake endpoints
+  rpc RecordMedicationIntake(RecordMedicationIntakeRequest) returns (RecordMedicationIntakeResponse) {
+    option (google.api.http) = {
+      post: "/v1/medication_intakes"
+      body: "*"
+    };
+  }
+
+  rpc GetMedicationIntake(GetMedicationIntakeRequest) returns (GetMedicationIntakeResponse) {
+    option (google.api.http) = {
+      get: "/v1/medication_intakes/{intake_id}"
+    };
+  }
+
+  rpc ListMedicationIntakes(ListMedicationIntakesRequest) returns (ListMedicationIntakesResponse) {
+    option (google.api.http) = {
+      get: "/v1/medication_intakes"
+    };
+  }
+
+  rpc GetPatientAdherenceRate(GetPatientAdherenceRateRequest) returns (GetPatientAdherenceRateResponse) {
+    option (google.api.http) = {
+      get: "/v1/patients/{patient_id}/adherence_rate"
+    };
+  }
+
+  rpc GetMedicationAdherenceRate(GetMedicationAdherenceRateRequest) returns (GetMedicationAdherenceRateResponse) {
+    option (google.api.http) = {
+      get: "/v1/medications/{medication_id}/patients/{patient_id}/adherence_rate"
+    };
+  }
+
+  rpc GetTimeSlotMedications(GetTimeSlotMedicationsRequest) returns (GetTimeSlotMedicationsResponse) {
+    option (google.api.http) = {
+      get: "/v1/patients/{patient_id}/time_slots/{time_slot}/medications"
+    };
+  }
+
+  // Medication Pricing Endpoints
+  rpc CreateMedicationPricing(CreateMedicationPricingRequest) returns (CreateMedicationPricingResponse) {
+    option (google.api.http) = {
+      post: "/v1/medication_pricing"
+      body: "*"
+    };
+  }
+
+  rpc GetMedicationPricing(GetMedicationPricingRequest) returns (GetMedicationPricingResponse) {
+    option (google.api.http) = {
+      get: "/v1/medication_pricing/{id}"
+    };
+  }
+
+  rpc UpdateMedicationPricing(UpdateMedicationPricingRequest) returns (UpdateMedicationPricingResponse) {
+    option (google.api.http) = {
+      put: "/v1/medication_pricing/{id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteMedicationPricing(DeleteMedicationPricingRequest) returns (DeleteMedicationPricingResponse) {
+    option (google.api.http) = {
+      delete: "/v1/medication_pricing/{id}"
+    };
+  }
+
+  rpc ListMedicationPricings(ListMedicationPricingsRequest) returns (ListMedicationPricingsResponse) {
+    option (google.api.http) = {
+      get: "/v1/medication_pricing"
+    };
+  }
+
+  rpc GetMedicationPricingByScheme(GetMedicationPricingBySchemeRequest) returns (GetMedicationPricingBySchemeResponse) {
+    option (google.api.http) = {
+      get: "/v1/medications/{medication_id}/pricing/scheme/{medical_scheme_id}"
+    };
+  }
+
+  // POS Sale Endpoints
+  rpc CreatePOSSale(CreatePOSSaleRequest) returns (CreatePOSSaleResponse) {
+    option (google.api.http) = {
+      post: "/v1/pharmacy/pos/sale"
+      body: "*"
+    };
+  }
+
+  rpc GetPOSSale(GetPOSSaleRequest) returns (GetPOSSaleResponse) {
+    option (google.api.http) = {
+      get: "/v1/pharmacy/pos/sale/{sale_id}"
+    };
+  }
+
+  rpc ListPOSSales(ListPOSSalesRequest) returns (ListPOSSalesResponse) {
+    option (google.api.http) = {
+      get: "/v1/pharmacy/pos/sales"
+    };
+  }
+
+}
+message StockMovement {
+  int32 movement_id = 1;
+  int32 medication_id = 2;
+  int32 store_id = 3;
+  string movement_type = 4;
+  int32 quantity = 5;
+  string reference = 6;
+  string created_at = 7;
+}
+
+message CreateStockMovementRequest {
+  int32 medication_id = 1;
+  int32 store_id = 2;
+  string movement_type = 3;
+  int32 quantity = 4;
+  string reference = 5;
+}
+
+message CreateStockMovementResponse {
+  int32 movement_id = 1;
+  string message = 2;
+}
+
+message GetStockMovementRequest {
+  int32 movement_id = 1;
+}
+
+message GetStockMovementResponse {
+  StockMovement stock_movement = 1;
+}
+
+message ListStockMovementsRequest {}
+
+message ListStockMovementsResponse {
+  repeated StockMovement stock_movements = 1;
+}
+
+message UpdateStockMovementRequest {
+  int32 movement_id = 1;
+  int32 store_id = 2;
+  string movement_type = 3;
+  int32 quantity = 4;
+  string reference = 5;
+}
+
+message UpdateStockMovementResponse {
+  string message = 1;
+}
+
+message DeleteStockMovementRequest {
+  int32 movement_id = 1;
+}
+
+message DeleteStockMovementResponse {
+  string message = 1;
+}
+
+// medication return messages
+message CreateMedicationReturnRequest {
+  int32 dispense_id = 1;
+  int32 patient_id = 2;
+  string return_reason = 3;
+  int32 quantity_returned = 4;
+}
+
+message CreateMedicationReturnResponse {
+  int32 return_id = 1;
+  string message = 2;
+}
+
+message GetMedicationReturnRequest {
+  int32 return_id = 1;
+}
+
+message MedicationReturn {
+  int32 return_id = 1;
+  int32 dispense_id = 2;
+  int32 patient_id = 3;
+  string patient_name = 4;
+  string return_reason = 5;
+  int32 quantity_returned = 6;
+  string return_date = 7;
+}
+
+message GetMedicationReturnResponse {
+  MedicationReturn medication_return = 1;
+}
+
+message ListMedicationReturnsRequest {}
+
+message ListMedicationReturnsResponse {
+  repeated MedicationReturn medication_returns = 1;
+}
+
+// dispense medication messages
+message CreateDispensedMedicationRequest {
+  int32 prescription_id = 1;
+  int32 patient_id = 2;
+  int32 pharmacist_id = 3;
+  int32 store_id = 4;
+}
+
+message CreateDispensedMedicationResponse {
+  int32 dispense_id = 1;
+  string message = 2;
+}
+
+message GetDispensedMedicationRequest {
+  int32 dispense_id = 1;
+}
+
+message GetDispensedMedicationResponse {
+  int32 dispense_id = 1;
+  int32 prescription_id = 2;
+  int32 patient_id = 3;
+  string patient_name = 4;
+  int32 pharmacist_id = 5;
+  string pharmacist_name = 6;
+  int32 store_id = 7;
+  string store_name = 8;
+  string dispensed_date = 9;
+}
+
+message ListDispensedMedicationsRequest {}
+
+message ListDispensedMedicationsResponse {
+  repeated GetDispensedMedicationResponse dispensed_medications = 1;
+}
+
+message UpdateDispensedMedicationRequest {
+  int32 dispense_id = 1;
+  int32 prescription_id = 2;
+  int32 patient_id = 3;
+  int32 pharmacist_id = 4;
+  int32 store_id = 5;
+}
+
+message UpdateDispensedMedicationResponse {
+  string message = 1;
+}
+
+message DeleteDispensedMedicationRequest {
+  int32 dispense_id = 1;
+}
+
+message DeleteDispensedMedicationResponse {
+  string message = 1;
+}
+
+
+// stock request item
+message CreateStockRequestItemRequest {
+  int32 request_id = 1;
+  int32 medication_id = 2;
+  int32 requested_quantity = 3;
+  int32 store_id = 4;
+}
+
+message CreateStockRequestItemResponse {
+  int32 item_id = 1;
+  string message = 2;
+}
+
+message GetStockRequestItemRequest {
+  int32 item_id = 1;
+}
+
+message GetStockRequestItemResponse {
+  int32 item_id = 1;
+  int32 request_id = 2;
+  int32 medication_id = 3;
+  string medication_name = 4;
+  int32 requested_quantity = 5;
+  int32 received_quantity = 6;
+}
+
+message ListStockRequestItemsRequest {}
+
+message ListStockRequestItemsResponse {
+  repeated GetStockRequestItemResponse stock_request_items = 1;
+}
+
+message UpdateStockRequestItemRequest {
+  int32 item_id = 1;
+  int32 requested_quantity = 2;
+  int32 received_quantity = 3;
+}
+
+message UpdateStockRequestItemResponse {
+  string message = 1;
+}
+
+message DeleteStockRequestItemRequest{
+  int32 item_id = 1;
+}
+message DeleteStockRequestItemResponse{
+  bool success = 1;
+  string message = 2;
+}
+
+
+// stock requests messages
+message CreateStockRequestRequest {
+  int32 requested_by = 1;
+  int32 store_id = 2;
+}
+
+message CreateStockRequestResponse {
+  int32 request_id = 1;
+  string message = 2;
+}
+
+message GetStockRequestRequest {
+  int32 request_id = 1;
+}
+
+message GetStockRequestResponse {
+  int32 request_id = 1;
+  int32 requested_by = 2;
+  string requester_name = 3;
+  int32 approved_by = 4;
+  string approver_name = 5;
+  string request_status = 6;
+  string request_date = 7;
+  string approved_date = 8;
+  int32 store_id = 9;
+}
+
+message ListStockRequestsRequest {}
+
+message ListStockRequestsResponse {
+  repeated GetStockRequestResponse stock_requests = 1;
+}
+
+message ApproveStockRequestRequest {
+  int32 request_id = 1;
+  int32 approved_by = 2;
+}
+
+message ApproveStockRequestResponse {
+  string message = 1;
+}
+
+message DeleteStockRequestRequest {
+  int32 request_id = 1;
+}
+
+message DeleteStockRequestResponse {
+  string message = 1;
+}
+
+// prescription items
+// Create Prescription Item
+message CreatePrescriptionItemRequest {
+  int32 prescription_id = 1;
+  int32 medication_id = 2;
+  string dosage = 3;
+  int32 quantity = 4;
+  string instructions = 5;
+  int32 store_id = 6;
+  string medication_name = 7; // Persisted so history is stable even if medication is renamed
+}
+
+message CreatePrescriptionItemResponse {
+  int32 item_id = 1;
+  string message = 2;
+  string medication_name = 3;
+}
+
+// Get a single prescription item
+message GetPrescriptionItemRequest {
+  int32 item_id = 1;
+}
+
+
+message GetPrescriptionItemResponse {
+  int32 item_id = 1;
+  int32 prescription_id = 2;
+  int32 medication_id = 3;
+  string medication_name = 4;
+  string dosage = 5;
+  int32 quantity = 6;
+  string instructions = 7;
+  int32 store_id = 8;
+}
+message UpdatePrescriptionItemRequest {
+  int32 item_id = 1;
+  int32 prescription_id = 2;
+  int32 medication_id = 3;
+  string dosage = 4;
+  int32 quantity = 5;
+  string instructions = 6;
+  int32 store_id = 7;
+}
+
+message UpdatePrescriptionItemResponse {
+  string message = 1;
+}
+
+
+
+// List all prescription items
+message ListPrescriptionItemsRequest {}
+
+message ListPrescriptionItemsResponse {
+  repeated GetPrescriptionItemResponse prescription_items = 1;
+}
+
+// Delete Prescription Item
+message DeletePrescriptionItemRequest {
+  int32 item_id = 1;
+}
+
+message DeletePrescriptionItemResponse {
+  string message = 1;
+}
+
+
+
+// prescription_requests
+// create 
+message CreatePrescriptionRequestRequest {
+  int32 patient_id = 1;
+  int32 doctor_id = 2;
+  string diagnosis_id = 3; // Optional: UUID of the diagnosis this prescription is for
+}
+message CreatePrescriptionRequestResponse {
+  int32 prescription_id = 1;
+  string message = 2;
+}
+// get single request
+// Request 
+message GetSinglePrescriptionRequestRequest {
+  int32 prescription_id = 1;
+}
+// Response
+message GetSinglePrescriptionRequestResponse {
+  PrescriptionRequest prescription_request = 1;
+}
+
+// update prescription request
+message UpdatePrescriptionRequestsRequests{
+
+  int32 prescription_id = 1;
+  string request_status = 2;
+}
+message UpdatePrescriptionRequestsResponse{
+  bool success = 1;
+  string message = 2;
+}
+
+
+message PrescriptionRequest {
+  int32 prescription_id = 1;
+  string request_status = 2;
+  string created_at = 3;
+  // Patient details
+  int32 patient_id = 4;
+  string patient_name = 5;
+  string patient_email = 6;
+  // Doctor details (filtered by role)
+  int32 doctor_id = 7;
+  string doctor_name = 8;
+  // Linked diagnosis
+  string diagnosis_id = 9;
+  string diagnosis_name = 10; // Denormalized for display
+}
+message ListPrescriptionRequestsRequests{}
+
+message ListPrescriptionRequestsResponse {
+  repeated PrescriptionRequest prescription_requests = 1;
+}
+
+
+
+
+// ----------- Medication Messages -----------
+
+message CreateMedicationRequest {
+  string medication_name = 1;
+  int32 category_id = 2;
+  int32 supplier_id = 3;
+  float cost_price = 4;
+  float markup_percentage = 5;
+  string bin_location = 7;
+  int32 store_id = 8;
+  int32 initial_quantity = 9;
+}
+
+message CreateMedicationResponse {
+  int32 medication_id = 1;
+  string message = 2;
+}
+
+message GetMedicationRequest {
+  int32 medication_id = 1;
+  int32 store_id = 2;
+}
+
+message GetMedicationResponse {
+  int32 medication_id = 1;
+  string medication_name = 2;
+  int32 category_id = 3;
+  int32 supplier_id = 4;
+  float cost_price = 5;
+  float markup_percentage = 6;
+  float selling_price = 7;
+  string bin_location = 9;
+  string created_at = 10;
+}
+
+message UpdateMedicationRequest {
+  int32 medication_id = 1;
+  string medication_name = 2;
+  int32 category_id = 3;
+  int32 supplier_id = 4;
+  float cost_price = 5;
+  float markup_percentage = 6;
+  string bin_location = 8;
+}
+
+message UpdateMedicationResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteMedicationRequest {
+  int32 medication_id = 1;
+}
+
+message DeleteMedicationResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListMedicationsRequest {
+  int32 store_id = 1;
+}
+
+message ListMedicationsResponse {
+  repeated Medication medications = 1;
+}
+
+message Medication {
+  int32 medication_id = 1;
+  string medication_name = 2;
+  int32 category_id = 3;
+  int32 supplier_id = 4;
+  float cost_price = 5;
+  float markup_percentage = 6;
+  float selling_price = 7;
+  string bin_location = 9;
+  string created_at = 10;
+}
+
+// ----------- Medication Category Messages -----------
+
+message CreateMedicationCategoryRequest {
+  string category_name = 1;
+}
+
+message CreateMedicationCategoryResponse {
+  int32 category_id = 1;
+  string message = 2;
+}
+
+message ListMedicationCategoriesRequest {}
+
+message ListMedicationCategoriesResponse {
+  repeated MedicationCategory categories = 1;
+}
+
+message MedicationCategory {
+  int32 category_id = 1;
+  string category_name = 2;
+}
+
+// ----------- Medication With Category -----------
+
+message GetMedicationWithCategoryRequest {
+  int32 medication_id = 1;
+}
+
+message GetMedicationWithCategoryResponse {
+  int32 medication_id = 1;
+  string medication_name = 2;
+  MedicationCategory category = 3;
+}
+message GetSingleCategoryRequest{
+  int32 category_id = 1;
+}
+message GetSingleCategoryResponse{
+  int32 category_id = 1;
+  string category_name = 2;
+}
+
+
+// Medication Schedule messages
+message MedicationSchedule {
+  int32 schedule_id = 1;
+  int32 patient_id = 2;
+  int32 medication_id = 3;
+  string medication_name = 4;
+  string frequency = 5;
+  string dosage = 6;
+  string start_date = 7;
+  string end_date = 8;
+  string time_slots = 9;
+  string notes = 10;
+  string status = 11;
+  string created_at = 12;
+  int32 store_id = 13;
+  float stock_quantity = 14;
+}
+
+message CreateMedicationScheduleRequest {
+  int32 patient_id = 1;
+  int32 medication_id = 2;
+  string frequency = 3;
+  string dosage = 4;
+  string start_date = 5;
+  string end_date = 6;
+  string time_slots = 7;
+  string notes = 8;
+  string status = 9;
+  int32 store_id = 10;
+}
+
+message CreateMedicationScheduleResponse {
+  int32 schedule_id = 1;
+  string message = 2;
+}
+
+message GetMedicationScheduleRequest {
+  int32 schedule_id = 1;
+}
+
+message GetMedicationScheduleResponse {
+  MedicationSchedule schedule = 1;
+}
+
+message ListMedicationSchedulesRequest {
+  int32 patient_id = 1;
+}
+
+message ListMedicationSchedulesResponse {
+  repeated MedicationSchedule schedules = 1;
+}
+
+message UpdateMedicationScheduleRequest {
+  int32 schedule_id = 1;
+  string frequency = 2;
+  string dosage = 3;
+  string start_date = 4;
+  string end_date = 5;
+  string time_slots = 6;
+  string notes = 7;
+  string status = 8;
+}
+
+message UpdateMedicationScheduleResponse {
+  string message = 1;
+}
+
+message DeleteMedicationScheduleRequest {
+  int32 schedule_id = 1;
+}
+
+message DeleteMedicationScheduleResponse {
+  string message = 1;
+}
+
+// Medication Intake messages
+message MedicationIntake {
+  int32 intake_id = 1;
+  int32 schedule_id = 2;
+  int32 patient_id = 3;
+  int32 medication_id = 4;
+  string medication_name = 5;
+  string scheduled_time = 6;
+  string actual_time = 7;
+  string status = 8;
+  string notes = 9;
+  string created_at = 10;
+}
+
+message RecordMedicationIntakeRequest {
+  int32 schedule_id = 1;
+  int32 patient_id = 2;
+  int32 medication_id = 3;
+  string scheduled_time = 4;
+  string actual_time = 5;
+  string status = 6;
+  string notes = 7;
+}
+
+message RecordMedicationIntakeResponse {
+  int32 intake_id = 1;
+  string message = 2;
+}
+
+message GetMedicationIntakeRequest {
+  int32 intake_id = 1;
+}
+
+message GetMedicationIntakeResponse {
+  MedicationIntake intake = 1;
+}
+
+message ListMedicationIntakesRequest {
+  int32 schedule_id = 1;
+}
+
+message ListMedicationIntakesResponse {
+  repeated MedicationIntake intakes = 1;
+}
+
+message AdherenceRateResponse {
+  int32 patient_id = 1;
+  int32 medication_id = 2;
+  int32 taken_count = 3;
+  int32 total_count = 4;
+  float adherence_rate = 5;
+  string start_date = 6;
+  string end_date = 7;
+}
+
+message GetPatientAdherenceRateRequest {
+  int32 patient_id = 1;
+  string start_date = 2;
+  string end_date = 3;
+}
+
+message GetPatientAdherenceRateResponse {
+  AdherenceRateResponse adherence_rate = 1;
+}
+
+message GetMedicationAdherenceRateRequest {
+  int32 medication_id = 1;
+  int32 patient_id = 2;
+  string start_date = 3;
+  string end_date = 4;
+}
+
+message GetMedicationAdherenceRateResponse {
+  AdherenceRateResponse adherence_rate = 1;
+}
+
+message TimeSlotMedication {
+  int32 schedule_id = 1;
+  int32 medication_id = 2;
+  string medication_name = 3;
+  string dosage = 4;
+  string time_slots = 5;
+  bool is_taken = 6;
+  string time_slot = 7;
+  string date = 8;
+}
+
+message GetTimeSlotMedicationsRequest {
+  int32 patient_id = 1;
+  string time_slot = 2;
+  string date = 3;
+}
+
+message GetTimeSlotMedicationsResponse {
+  repeated TimeSlotMedication medications = 1;
+}
+
+message MedicationPricing {
+    int32 id = 1;
+    int32 medication_id = 2;
+    int32 medical_scheme_id = 3;
+    int32 price_list_id = 4;
+    double selling_price = 5;
+    google.protobuf.Timestamp valid_from = 6;
+    google.protobuf.Timestamp valid_to = 7;
+}
+
+message DispenseMedicationRequest {
+    int32 prescription_id = 1;
+    int32 medication_id = 2;
+    int32 quantity = 3;
+    int32 medical_scheme_id = 4;
+    int32 dispensed_by = 5; // staff ID
+}
+
+message DispenseMedicationResponse {
+    bool success = 1;
+    string message = 2;
+    double total_price = 3;
+    string transaction_id = 4;
+}
+
+// Medication Pricing Request and Response messages
+message CreateMedicationPricingRequest {
+    int32 medication_id = 1;
+    int32 medical_scheme_id = 2;
+    int32 price_list_id = 3;
+    double selling_price = 4;
+    google.protobuf.Timestamp valid_from = 5;
+    google.protobuf.Timestamp valid_to = 6;
+}
+
+message CreateMedicationPricingResponse {
+    int32 id = 1;
+    string message = 2;
+}
+
+message GetMedicationPricingRequest {
+    int32 id = 1;
+}
+
+message GetMedicationPricingResponse {
+    MedicationPricing medication_pricing = 1;
+}
+
+message UpdateMedicationPricingRequest {
+    int32 id = 1;
+    int32 medication_id = 2;
+    int32 medical_scheme_id = 3;
+    int32 price_list_id = 4;
+    double selling_price = 5;
+    google.protobuf.Timestamp valid_from = 6;
+    google.protobuf.Timestamp valid_to = 7;
+}
+
+message UpdateMedicationPricingResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message DeleteMedicationPricingRequest {
+    int32 id = 1;
+}
+
+message DeleteMedicationPricingResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message ListMedicationPricingsRequest {
+    int32 medication_id = 1;
+    int32 medical_scheme_id = 2;
+    int32 price_list_id = 3;
+}
+
+message ListMedicationPricingsResponse {
+    repeated MedicationPricing medication_pricings = 1;
+}
+
+message GetMedicationPricingBySchemeRequest {
+    int32 medication_id = 1;
+    int32 medical_scheme_id = 2;
+}
+
+message GetMedicationPricingBySchemeResponse {
+    MedicationPricing medication_pricing = 1;
+}
+
+// POS Sale Messages
+message POSSaleItem {
+    int32 medication_id = 1;
+    string medication_name = 2;
+    int32 quantity = 3;
+    double unit_price = 4;
+    double discount_percentage = 5;
+    double item_total = 6;
+}
+
+message CreatePOSSaleRequest {
+    string patient_id = 1; // Optional - empty for walk-in customers
+    int32 medical_scheme_id = 2; // 0 for cash patients
+    int32 cashier_id = 3;
+    int32 store_id = 4;
+    repeated POSSaleItem items = 5;
+    double subtotal = 6;
+    double invoice_discount_percentage = 7;
+    double vat_amount = 8;
+    double total_amount = 9;
+    double paid_amount = 10;
+    string payment_method = 11; // "cash", "bank", "mobile"
+    string customer_name = 12; // For walk-in customers
+    string customer_phone = 13; // Optional
+}
+
+message CreatePOSSaleResponse {
+    string sale_id = 1;
+    string invoice_id = 2;
+    string receipt_number = 3;
+    double change_amount = 4;
+    string message = 5;
+}
+
+message GetPOSSaleRequest {
+    string sale_id = 1;
+}
+
+message GetPOSSaleResponse {
+    string sale_id = 1;
+    string patient_id = 2;
+    string customer_name = 3;
+    int32 cashier_id = 4;
+    string cashier_name = 5;
+    int32 store_id = 6;
+    string store_name = 7;
+    repeated POSSaleItem items = 8;
+    double subtotal = 9;
+    double total_discount = 10;
+    double vat_amount = 11;
+    double total_amount = 12;
+    double paid_amount = 13;
+    string payment_method = 14;
+    string sale_date = 15;
+    string receipt_number = 16;
+}
+
+message ListPOSSalesRequest {
+    string start_date = 1;
+    string end_date = 2;
+    int32 cashier_id = 3;
+}
+
+message ListPOSSalesResponse {
+    repeated GetPOSSaleResponse sales = 1;
+    double total_sales_amount = 2;
+    int32 total_sales_count = 3;
+}
+
+// Medications with Stock Messages
+message MedicationWithStock {
+    int32 medication_id = 1;
+    string name = 2;
+    string category = 3;
+    double quantity_in_store = 4;
+    string unit_of_measure = 5;
+    string store_id = 6;
+}
+
+message ListMedicationsWithStockRequest {
+    string store_id = 1;
+    string category = 2;
+}
+
+message ListMedicationsWithStockResponse {
+    repeated MedicationWithStock medications = 1;
+}

@@ -1,0 +1,83 @@
+// services/route-permissions-service/proto/permission_service.proto
+syntax = "proto3";
+
+package route_permissions;
+
+import "google/api/annotations.proto";
+
+option go_package = "./shared/route-permissions-service/proto";
+
+service RoutePermissionService {
+  // Check if a user has permission to access a route
+  rpc CheckPermission (CheckPermissionRequest) returns (CheckPermissionResponse) {
+    option (google.api.http) = {
+      post: "/v1/permissions/check"
+      body: "*"
+    };
+  }
+
+  // Get all route permissions
+  rpc GetAllRoutePermissions (GetAllRoutePermissionsRequest) returns (GetAllRoutePermissionsResponse) {
+    option (google.api.http) = {
+      get: "/v1/permissions"
+    };
+  }
+
+  // Update route permissions
+  rpc UpdateRoutePermission (UpdateRoutePermissionRequest) returns (UpdateRoutePermissionResponse) {
+    option (google.api.http) = {
+      put: "/v1/permissions"
+      body: "*"
+    };
+  }
+
+  // Add new route permission
+  rpc AddRoutePermission (AddRoutePermissionRequest) returns (AddRoutePermissionResponse) {
+    option (google.api.http) = {
+      post: "/v1/permissions"
+      body: "*"
+    };
+  }
+}
+
+message CheckPermissionRequest {
+  string route = 1;
+  string user_id = 2;
+  repeated string user_roles = 3;
+}
+
+message CheckPermissionResponse {
+  bool has_permission = 1;
+}
+
+message RoutePermission {
+  string route = 1;
+  repeated string roles = 2;
+  repeated string users = 3;
+}
+
+message GetAllRoutePermissionsRequest {}
+
+message GetAllRoutePermissionsResponse {
+  repeated RoutePermission permissions = 1;
+}
+
+message UpdateRoutePermissionRequest {
+  string route = 1;
+  repeated string roles = 2;
+  repeated string users = 3;
+}
+
+message UpdateRoutePermissionResponse {
+  bool success = 1;
+}
+
+message AddRoutePermissionRequest {
+  string route = 1;
+  repeated string roles = 2;
+  repeated string users = 3;
+}
+
+message AddRoutePermissionResponse {
+  bool success = 1;
+}

@@ -6,14 +6,10 @@ require (
 	github.com/IBM/sarama v1.45.2
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1
+	github.com/resend/resend-go/v2 v2.28.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20250721164621-a45f3dfb1074
 	google.golang.org/grpc v1.74.2
 	google.golang.org/protobuf v1.36.6
-)
-
-require (
-	github.com/antihax/optional v1.0.0 // indirect
-	golang.org/x/oauth2 v0.30.0 // indirect
 )
 
 require (
@@ -22,7 +18,6 @@ require (
 	github.com/eapache/go-resiliency v1.7.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
-	github.com/getbrevo/brevo-go v1.1.3
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect

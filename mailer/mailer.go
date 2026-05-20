@@ -1,11 +1,10 @@
 package mailer
 
 import (
-	"context"
 	"fmt"
 	"os"
 
-	brevo "github.com/getbrevo/brevo-go/lib"
+	"github.com/resend/resend-go/v2"
 )
 
 type Email struct {
@@ -18,72 +17,47 @@ type Email struct {
 	HTMLContent  string
 }
 
-// SendEmail sends an email using Brevo API.
+// SendUserEmail sends an email using Resend API.
 func SendUserEmail(e Email) error {
-	// Initialize context and configuration
-	ctx := context.Background()
-	cfg := brevo.NewConfiguration()
-
 	// Configure API key authorization
-	apiKey := os.Getenv("SENDINBLUE_API_KEY")
+	apiKey := os.Getenv("RESEND_API_KEY")
 	if apiKey == "" {
-		return fmt.Errorf("BREVO_API_KEY not set")
+		return fmt.Errorf("RESEND_API_KEY not set")
 	}
 
-	cfg.AddDefaultHeader("api-key", apiKey)
-	cfg.AddDefaultHeader("partner-key", apiKey)
-
 	// Create API client
-	client := brevo.NewAPIClient(cfg)
+	client := resend.NewClient(apiKey)
 
 	// Prepare the email
-	email := brevo.SendSmtpEmail{
-		Sender: &brevo.SendSmtpEmailSender{
-			Name:  e.FromName,
-			Email: e.FromEmail,
-		},
-		To: []brevo.SendSmtpEmailTo{
-			{
-				Email: e.ToEmail,
-				Name:  e.ToName,
-			},
-		},
-		Subject:     e.Subject,
-		HtmlContent: e.HTMLContent,
-		TextContent: e.PlainContent,
+	params := &resend.SendEmailRequest{
+		From:    fmt.Sprintf("%s <%s>", e.FromName, e.FromEmail),
+		To:      []string{fmt.Sprintf("%s <%s>", e.ToName, e.ToEmail)},
+		Subject: e.Subject,
+		Html:    e.HTMLContent,
+		Text:    e.PlainContent,
 	}
 
 	// Send the email
-	_, httpResp, err := client.TransactionalEmailsApi.SendTransacEmail(ctx, email)
+	_, err := client.Emails.Send(params)
 	if err != nil {
 		return fmt.Errorf("error sending email: %v", err)
-	}
-
-	if httpResp.StatusCode >= 400 {
-		return fmt.Errorf("email sending returned status: %d", httpResp.StatusCode)
 	}
 
 	return nil
 }
 
-// TestConnection tests the connection to Brevo API (optional helper function)
+// TestConnection tests the connection to Resend API (optional helper function)
 func TestConnection() error {
-	ctx := context.Background()
-	cfg := brevo.NewConfiguration()
-
-	apiKey := os.Getenv("SENDINBLUE_API_KEY")
+	apiKey := os.Getenv("RESEND_API_KEY")
 	if apiKey == "" {
-		return fmt.Errorf("BREVO_API_KEY not set")
+		return fmt.Errorf("RESEND_API_KEY not set")
 	}
 
-	cfg.AddDefaultHeader("api-key", apiKey)
-	cfg.AddDefaultHeader("partner-key", apiKey)
+	client := resend.NewClient(apiKey)
 
-	client := brevo.NewAPIClient(cfg)
-
-	_, _, err := client.AccountApi.GetAccount(ctx)
+	_, err := client.Domains.List()
 	if err != nil {
-		return fmt.Errorf("error when calling AccountApi->get_account: %v", err)
+		return fmt.Errorf("error when calling Resend API: %v", err)
 	}
 
 	return nil

@@ -6,7 +6,6 @@ require (
 	github.com/IBM/sarama v1.45.2
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1
-	github.com/resend/resend-go/v2 v2.28.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20250721164621-a45f3dfb1074
 	google.golang.org/grpc v1.74.2
 	google.golang.org/protobuf v1.36.6
